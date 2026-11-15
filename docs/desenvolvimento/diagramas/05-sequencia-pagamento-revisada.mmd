@@ -1,0 +1,39 @@
+sequenceDiagram
+  autonumber
+  actor C as Cliente
+  participant V as pagamento.html (View)
+  participant PC as controllers/pedidos.py
+  participant SP as services/pedidos.py
+  participant PG as services/pagamento.py (simulado)
+  participant M as models (Pedido, Produto, Pagamento)
+  participant BD as Banco de dados
+  C->>V: escolhe Crédito, Débito ou Pix e confirma
+  V->>PC: POST /pedidos/{id}/pagar (metodo, cartão, csrf)
+  PC->>PC: confere se o pedido é do cliente (RN12)
+  PC->>SP: pagar_pedido(pedido, metodo, dados)
+  SP->>PG: validar_cartao(nome, número, validade, cvv)
+  alt dados do cartão inválidos
+    PG-->>SP: erros por campo
+    SP-->>PC: ErroValidacao
+    PC-->>V: 422 com mensagem em cada campo
+  else dados válidos
+    SP->>M: confere estoque de cada item (RN08)
+    alt estoque insuficiente
+      SP-->>PC: EstoqueInsuficiente
+      PC-->>V: 409 "Estoque insuficiente para: sabor"
+    else estoque ok
+      SP->>PG: cobrar(metodo, valor, número)
+      alt aprovado
+        PG-->>SP: aprovado + código
+        SP->>M: Pagamento APROVADO, baixar estoque, status PAGO
+        M->>BD: COMMIT
+        SP-->>PC: pagamento aprovado
+        PC-->>C: redireciona para "Pedido confirmado"
+      else recusado (final 0000)
+        PG-->>SP: recusado
+        SP->>M: Pagamento RECUSADO (pedido continua aguardando)
+        M->>BD: COMMIT
+        PC-->>C: tela "Pagamento recusado" com "Tentar novamente"
+      end
+    end
+  end

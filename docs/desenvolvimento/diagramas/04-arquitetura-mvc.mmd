@@ -1,0 +1,27 @@
+flowchart TB
+  U([Navegador do usuário<br/>celular ou computador])
+  C[Controller – blueprints Flask<br/>vitrine · auth · carrinho · pedidos · admin<br/>+ páginas de erro 400/403/404/413/500]
+  subgraph M[Model]
+    direction TB
+    SV[services – regras de negócio<br/>frete · carrinho · pagamento simulado<br/>pedidos · contas · produtos]
+    MD[models SQLAlchemy<br/>Usuario · Categoria · Produto · Pedido<br/>ItemPedido · Pagamento · HistoricoStatus]
+  end
+  subgraph V[View]
+    direction TB
+    T[templates Jinja2<br/>vitrine · conta · carrinho · checkout<br/>pagamento · pedidos · admin · erros]
+    S[static<br/>CSS responsivo · JavaScript · ilustrações SVG]
+  end
+  DB[(Banco de dados<br/>SQLite padrão · PostgreSQL/MySQL<br/>via DATABASE_URL)]
+  U -- "(1) requisição HTTP" --> C
+  C -- "(2) chama a regra" --> SV
+  SV -- "(3) lê e grava" --> MD
+  MD -- ORM --> DB
+  C -- "(4) escolhe a view e passa os dados" --> T
+  T -- "(5) HTML" --> U
+  S -.-> U
+  classDef v fill:#F3E8F1,stroke:#5D2452
+  classDef c fill:#DDEBE4,stroke:#29604C
+  classDef m fill:#FFF4D6,stroke:#7A5000
+  class T,S v
+  class C c
+  class SV,MD m

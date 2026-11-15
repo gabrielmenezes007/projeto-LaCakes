@@ -1,0 +1,113 @@
+classDiagram
+  direction LR
+  class Usuario {
+    +int id
+    +str nome
+    +str email
+    +str senha_hash
+    +str telefone
+    +Perfil perfil
+    +datetime criado_em
+    +definir_senha(senha)
+    +verificar_senha(senha) bool
+    +eh_admin() bool
+    +iniciais() str
+  }
+  class Categoria {
+    +int id
+    +str nome
+    +str descricao
+  }
+  class Produto {
+    +int id
+    +str nome
+    +str descricao
+    +str ingredientes
+    +str alergenicos
+    +int preco_centavos
+    +int estoque
+    +str imagem
+    +bool ativo
+    +datetime criado_em
+    +disponivel() bool
+    +ultimas_unidades() bool
+    +baixar_estoque(qtd)
+    +repor_estoque(qtd)
+  }
+  class Pedido {
+    +int id
+    +StatusPedido status
+    +Modalidade modalidade
+    +str cep
+    +str logradouro
+    +str numero
+    +str complemento
+    +str bairro
+    +int subtotal_centavos
+    +int taxa_entrega_centavos
+    +int total_centavos
+    +datetime criado_em
+    +datetime atualizado_em
+    +calcular_totais(taxa)
+    +registrar_status(status, obs)
+    +proximo_status() StatusPedido
+    +avancar_status()
+    +pode_cancelar() bool
+    +etapas() list
+    +pagamento_aprovado() Pagamento
+  }
+  class ItemPedido {
+    +int id
+    +int quantidade
+    +int preco_unitario_centavos
+    +subtotal_centavos() int
+  }
+  class Pagamento {
+    +int id
+    +MetodoPagamento metodo
+    +StatusPagamento status
+    +int valor_centavos
+    +str cartao_final
+    +str codigo_transacao
+    +datetime criado_em
+    +descricao() str
+  }
+  class HistoricoStatus {
+    +int id
+    +StatusPedido status
+    +str observacao
+    +datetime criado_em
+  }
+  class MetodoPagamento {
+    <<enumeration>>
+    CREDITO
+    DEBITO
+    PIX
+  }
+  class StatusPedido {
+    <<enumeration>>
+    AGUARDANDO_PAGAMENTO
+    PAGO
+    EM_PREPARO
+    SAIU_PARA_ENTREGA
+    PRONTO_PARA_RETIRADA
+    ENTREGUE
+    CANCELADO
+  }
+  class Carrinho {
+    <<sessão>>
+    +adicionar(produto, qtd)
+    +atualizar(produto, qtd)
+    +remover(produto_id)
+    +itens() list
+    +subtotal_centavos() int
+  }
+  Usuario "1" --> "0..*" Pedido : faz
+  Categoria "1" o-- "0..*" Produto : agrupa
+  Pedido "1" *-- "1..*" ItemPedido : contém
+  ItemPedido "0..*" --> "1" Produto : refere-se a
+  Pedido "1" *-- "0..*" Pagamento : tentativas
+  Pedido "1" *-- "1..*" HistoricoStatus : registra
+  Carrinho ..> Produto : usa
+  Pagamento ..> MetodoPagamento
+  Pedido ..> StatusPedido
