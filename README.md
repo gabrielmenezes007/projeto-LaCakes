@@ -51,7 +51,7 @@ database/        projeto físico (SQL para SQLite e PostgreSQL) e dicionário de
 docs/
   planejamento/     histórias de usuário, backlog, requisitos, UML, wireframes, mockups e mapas
   desenvolvimento/  modelo de dados e manual de uso
-  testes-usuarios/  formulário de teste e consolidação das avaliações
+  testes-usuarios/  roteiro dos testes com usuários
   decisoes.md       decisões de projeto e seus motivos
 scripts/         geração de diagramas, telas, ilustrações e documentação do banco
 ```
@@ -63,7 +63,7 @@ scripts/         geração de diagramas, telas, ilustrações e documentação d
 - [x] Banco de dados: [modelo de dados](docs/desenvolvimento/modelo-de-dados.md) e [dicionário](database/dicionario-de-dados.md)
 - [x] Código (front-end e back-end) e testes automatizados: [verificação e validação](docs/desenvolvimento/testes.md)
 - [x] [Manual de uso](docs/desenvolvimento/manual-de-uso.md) e [telas do sistema](docs/desenvolvimento/img/telas)
-- [x] Roteiro e formulário dos [testes com usuários](docs/testes-usuarios/README.md)
+- [x] Roteiro dos [testes com usuários](docs/testes-usuarios/README.md)
 - [ ] Testes com 5 usuários e correções
 
 ## Regenerar os artefatos de planejamento

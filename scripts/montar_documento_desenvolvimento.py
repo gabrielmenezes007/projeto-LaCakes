@@ -33,9 +33,8 @@ APENDICES = [
     ("C", "Telas do sistema implementado", None),
     ("D", "Testes: verificação e validação", [DOCS / "desenvolvimento" / "testes.md"]),
     ("E", "Manual de uso", [DOCS / "desenvolvimento" / "manual-de-uso.md"]),
-    ("F", "Roteiro e formulário dos testes com usuários", [DOCS / "testes-usuarios" / "roteiro-de-teste.md",
-                                                          DOCS / "testes-usuarios" / "formulario-de-teste.md"]),
 ]
+ROTEIRO_TESTE = DOCS / "testes-usuarios" / "roteiro-de-teste.md"
 
 TELAS = [
     ("01-vitrine", "Vitrine"), ("02-vitrine-filtro-recheados", "Vitrine filtrada"),
@@ -100,6 +99,14 @@ class Markdown:
                 p.paragraph_format.space_after = Pt(1)
                 inline(p, linha[ci] if ci < len(linha) else "", tam)
             nao_quebrar_linha(t.rows[li])
+        if cab[0] == "#":  # coluna de numeração estreita; o resto divide os 15 cm úteis
+            larguras = [1.0] + [14.0 / (ncol - 1)] * (ncol - 1)
+            grade = t._tbl.tblGrid.findall(qn("w:gridCol"))
+            for col, cm in zip(grade, larguras):
+                col.set(qn("w:w"), str(int(cm * 567)))
+            for row in t.rows:
+                for c, cm in zip(row.cells, larguras):
+                    c.width = Cm(cm)
         self.e.par(espaco_depois=4)
 
     def converter(self, arquivo, pular_h1=False):
@@ -207,6 +214,7 @@ def celula(c, linhas, tam=10):
 
 def preencher(doc):
     aluno = C.ALUNO
+    link_videos = aluno.get("link_videos", "a preencher")
     ps = doc.paragraphs
     for p in ps:
         if p.text.startswith("Nome:"):
@@ -244,7 +252,8 @@ def preencher(doc):
         None,
         [REPOSITORIO],
         ["Execução local – passo a passo no README do repositório e no Apêndice E (Manual de uso)."],
-        ["a preencher"],
+        [link_videos, "Pasta do Google Drive com os dois vídeos: 1 – Demonstração do sistema; "
+                      "2 – Mudanças após os testes."],
     ]
     t = doc.tables[0]
     for i, v in enumerate(valores):
@@ -255,13 +264,12 @@ def preencher(doc):
             limpar(p)
             run(p, "(X) Tradicional", True)
 
-    # Tabelas dos testadores: marcar como pendentes
-    for tb in doc.tables[1:6]:
-        for row in tb.rows:
-            for c in {id(x): x for x in row.cells}.values():
-                p = c.paragraphs[-1]
-                r = run(p, " a preencher", italico=True, tam=9)
-                r.font.color.rgb = CINZA
+    # Roteiro para os testadores, logo antes dos quadros que eles preenchem (os quadros ficam em branco)
+    instrucao = next(p for p in doc.paragraphs if p.text.startswith("Escolha 5 colegas"))
+    e_roteiro = Escritor(doc, instrucao._p)
+    e_roteiro.titulo("Roteiro para quem vai testar", 2)
+    Markdown(e_roteiro, nivel_base=3).converter(ROTEIRO_TESTE, pular_h1=True)
+    e_roteiro.par("Quadros dos testadores (um para cada pessoa):", negrito=True)
 
     # Laudo de qualidade
     laudo = next(p for p in doc.paragraphs if p.text.startswith("Insira a seguir o laudo"))
@@ -301,8 +309,9 @@ def preencher(doc):
     r = run(p, "a preencher após os testes com usuários.", italico=True)
     r.font.color.rgb = CINZA
 
-    # Link do vídeo da solução atualizada
-    celula(doc.tables[6].rows[0].cells[1], ["a preencher"])
+    # Link do vídeo da solução atualizada (mesma pasta dos dois vídeos)
+    tabela_video = next(tb for tb in doc.tables if tb.rows[0].cells[0].text.strip().startswith("Link para o vídeo"))
+    celula(tabela_video.rows[0].cells[1], [link_videos, "Vídeo 2 – Mudanças após os testes, na pasta do Google Drive."])
 
 
 def apendices(doc):

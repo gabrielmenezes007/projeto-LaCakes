@@ -120,9 +120,10 @@ O sistema também foi instalado e usado pelo autor no próprio computador, com `
 
 **Situação: a preencher.** Os testes com usuários ainda não foram realizados.
 
-- Formulário que cada testador preenche: [docs/testes-usuarios/formulario-de-teste.md](../testes-usuarios/formulario-de-teste.md)
-- Roteiro de cenários sugeridos: [docs/testes-usuarios/roteiro-de-teste.md](../testes-usuarios/roteiro-de-teste.md)
-- Consolidação das 5 avaliações e laudo de qualidade: a preencher depois dos testes.
+- Cada testador segue o [roteiro de teste](../testes-usuarios/roteiro-de-teste.md) (15 tarefas, em linguagem do dia a
+  dia) e registra o resultado no seu quadro do documento de entrega: nome, data, o que funcionou, o que não funcionou
+  e o que deve ser corrigido, e o que não foi testado e por quê.
+- Resumo das 5 avaliações, correções feitas e laudo de qualidade: a preencher depois dos testes.
 
 | Testador | Data | Funcionou | Não funcionou | Não testado |
 |---|---|---|---|---|
