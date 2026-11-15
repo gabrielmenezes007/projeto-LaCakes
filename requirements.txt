@@ -1,0 +1,10 @@
+Flask==3.1.2
+Flask-SQLAlchemy==3.1.1
+Flask-Login==0.6.3
+Flask-WTF==1.2.2
+pytest==8.4.2
+pytest-cov==7.0.0
+
+# Drivers opcionais para trocar o banco via DATABASE_URL (descomente o que for usar):
+# psycopg2-binary==2.9.10   # PostgreSQL  -> DATABASE_URL=postgresql://usuario:senha@localhost:5432/lacakes
+# PyMySQL==1.1.1            # MySQL       -> DATABASE_URL=mysql+pymysql://usuario:senha@localhost:3306/lacakes

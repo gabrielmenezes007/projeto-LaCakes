@@ -15,3 +15,7 @@ scripts/node_modules/
 *.docx
 *.pdf
 scripts/dados_aluno.json
+
+# Banco local e fotos enviadas pelo admin
+instance/
+app/static/uploads/
