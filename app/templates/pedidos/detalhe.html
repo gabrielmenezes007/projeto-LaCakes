@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import status, csrf %}
+{% block titulo %}Pedido #{{ pedido.id }}{% endblock %}
+{% block conteudo %}
+<a class="voltar" href="{{ url_for('pedidos.lista') }}">← Meus pedidos</a>
+<h1>Pedido #{{ pedido.id }}</h1>
+{{ status(pedido.status) }}
+<div class="colunas">
+  <section class="caixa">
+    <h2>Andamento</h2>
+    {% if pedido.status == StatusPedido.CANCELADO %}
+      <div class="alerta erro" role="status"><span aria-hidden="true">✖</span>
+        <span>Pedido cancelado em {{ pedido.momento_do_status(StatusPedido.CANCELADO)|data }}.
+        {% if pedido.pagamento_aprovado %}O pagamento foi estornado.{% endif %}</span></div>
+    {% endif %}
+    <ol class="timeline">
+      {% for etapa in pedido.etapas %}
+        {% set momento = pedido.momento_do_status(etapa) %}
+        {% if etapa == pedido.status %}{% set classe = 'atual' %}
+        {% elif momento %}{% set classe = 'feito' %}
+        {% else %}{% set classe = 'pend' %}{% endif %}
+        <li class="passo {{ classe }}" {% if classe == 'atual' %}aria-current="step"{% endif %}>
+          <b>{{ etapa.rotulo }}</b>
+          <small>{% if momento %}{{ momento|data }}{% elif classe == 'pend' %}–{% endif %}</small>
+        </li>
+      {% endfor %}
+    </ol>
+    {% if pedido.status.value == 'PRONTO_PARA_RETIRADA' %}
+      <p><b>Retire em:</b> {{ loja.endereco }} · {{ loja.horario }}</p>
+    {% endif %}
+  </section>
+
+  <aside class="caixa resumo">
+    <h2>Itens</h2>
+    {% for i in pedido.itens %}
+      <div class="linha"><span>{{ i.quantidade }}× {{ i.produto.nome }}</span><span>{{ i.subtotal_centavos|moeda }}</span></div>
+    {% endfor %}
+    <div class="linha sep"><span>Subtotal</span><span>{{ pedido.subtotal_centavos|moeda }}</span></div>
+    <div class="linha"><span>Entrega</span><span>{{ 'Grátis' if pedido.taxa_entrega_centavos == 0 else (pedido.taxa_entrega_centavos|moeda) }}</span></div>
+    <div class="linha total"><span>Total</span><span>{{ pedido.total_centavos|moeda }}</span></div>
+    {% if pedido.pagamento_aprovado %}
+      <div class="linha"><span>Pagamento</span><span>{{ pedido.pagamento_aprovado.descricao }}{% if pedido.pagamento_aprovado.status.value == 'ESTORNADO' %} (estornado){% endif %}</span></div>
+    {% endif %}
+    <p><b>{{ pedido.modalidade.rotulo }}:</b>
+      {% if pedido.modalidade.value == 'ENTREGA' %}{{ pedido.logradouro }}, {{ pedido.numero }}{% if pedido.complemento %} – {{ pedido.complemento }}{% endif %}, {{ pedido.bairro }} – CEP {{ pedido.cep|cep }}
+      {% else %}{{ loja.endereco }}{% endif %}</p>
+
+    {% if pedido.status.value == 'AGUARDANDO_PAGAMENTO' %}
+      <a class="btn verde" href="{{ url_for('pedidos.pagamento', pedido_id=pedido.id) }}">Pagar agora</a>
+    {% endif %}
+    {% if pedido.pode_cancelar %}
+      <form method="post" action="{{ url_for('pedidos.cancelar', pedido_id=pedido.id) }}"
+            data-confirmar="Tem certeza que deseja cancelar o pedido #{{ pedido.id }}?">
+        {{ csrf() }}
+        <button type="submit" class="btn sec">Cancelar pedido</button>
+      </form>
+      <p class="demo">É possível cancelar até o pedido entrar em preparo.</p>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

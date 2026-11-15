@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import imagem_produto, csrf, alerta as caixa_alerta %}
+{% block titulo %}Admin – Produtos{% endblock %}
+{% block conteudo %}
+<div class="admin-abas"><a class="ativo" href="{{ url_for('admin.produtos') }}" aria-current="page">Produtos</a><a href="{{ url_for('admin.pedidos') }}">Pedidos</a></div>
+<div class="titulo-acao">
+  <h1>Produtos e estoque do dia</h1>
+  <a class="btn auto" href="{{ url_for('admin.novo_produto') }}">+ Novo cupcake</a>
+</div>
+{{ caixa_alerta(alerta) }}
+<form method="post" action="{{ url_for('admin.salvar_estoques') }}">
+  {{ csrf() }}
+  <div class="lista-admin">
+  {% for p in produtos %}
+    {% set chave = 'estoque_' ~ p.id %}
+    <div class="prod-adm {{ '' if p.ativo else 'inativo' }}">
+      {{ imagem_produto(p, 'mini') }}
+      <div class="det">
+        <b>{{ p.nome }}</b><br>
+        {{ p.preco_centavos|moeda }} · {{ p.categoria.nome }} ·
+        {% if p.ativo %}<span class="status s-ent">Ativo</span>{% else %}<span class="status s-ag">Inativo</span>{% endif %}
+        {% if p.ativo and p.estoque == 0 %}<span class="status s-canc">Esgotado</span>{% endif %}
+        <br><a class="link" href="{{ url_for('admin.editar_produto', produto_id=p.id) }}">Editar</a>
+      </div>
+      <div class="centro">
+        <label for="{{ chave }}"><small>Estoque</small></label>
+        <input class="estq{% if erros.get(chave) %} invalido{% endif %}" id="{{ chave }}" name="{{ chave }}" type="number"
+               min="0" max="500" value="{{ (valores or {}).get(chave, p.estoque) }}" inputmode="numeric">
+      </div>
+    </div>
+    {% if erros.get(chave) %}<p class="msg-campo">⚠ {{ erros[chave] }}</p>{% endif %}
+  {% else %}
+    <p>Nenhum produto cadastrado ainda.</p>
+  {% endfor %}
+  </div>
+  {% if produtos %}<button class="btn sec" type="submit">Salvar estoques do dia</button>{% endif %}
+</form>
+{% endblock %}

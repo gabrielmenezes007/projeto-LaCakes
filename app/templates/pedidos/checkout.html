@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import campo, csrf, alerta as caixa_alerta %}
+{% block titulo %}Entrega e resumo{% endblock %}
+{% block conteudo %}
+<a class="voltar" href="{{ url_for('carrinho.ver') }}">← Voltar ao carrinho</a>
+<h1>Entrega e resumo</h1>
+{{ caixa_alerta(alerta) }}
+<form method="post" novalidate data-checkout data-subtotal="{{ subtotal }}" data-taxa-entrega="{{ taxa_entrega }}">
+  {{ csrf() }}
+  <div class="colunas">
+    <section>
+      <fieldset class="opcoes">
+        <legend>Como você quer receber?</legend>
+        <label class="opcao {{ 'sel' if modalidade != 'RETIRADA' }}">
+          <input type="radio" name="modalidade" value="ENTREGA" {{ 'checked' if modalidade != 'RETIRADA' }}>
+          <b>🚚 Entrega</b>
+          {{ 'Grátis' if taxa_entrega == 0 else (taxa_entrega|moeda) }} · grátis acima de R$ 120,00 · só em Jaú
+        </label>
+        <label class="opcao {{ 'sel' if modalidade == 'RETIRADA' }}">
+          <input type="radio" name="modalidade" value="RETIRADA" {{ 'checked' if modalidade == 'RETIRADA' }}>
+          <b>🏪 Retirar na loja</b>
+          Sem taxa · {{ loja.endereco }}
+        </label>
+      </fieldset>
+      {% if erros.get('modalidade') %}<p class="msg-campo">⚠ {{ erros.modalidade }}</p>{% endif %}
+
+      <div class="endereco" data-endereco {% if modalidade == 'RETIRADA' %}hidden{% endif %}>
+        {{ campo('cep', 'CEP', form, erros, placeholder='17200-000', dica='Entregamos em Jaú/SP (CEP 17200-001 a 17229-999).', autocomplete='postal-code', obrigatorio=true, extra='inputmode="numeric" maxlength="9"') }}
+        {{ campo('logradouro', 'Rua', form, erros, placeholder='Rua / avenida', autocomplete='address-line1', obrigatorio=true) }}
+        <div class="duas">
+          <div>{{ campo('numero', 'Número', form, erros, placeholder='Nº', obrigatorio=true) }}</div>
+          <div>{{ campo('complemento', 'Complemento', form, erros, placeholder='Opcional', autocomplete='address-line2') }}</div>
+        </div>
+        {{ campo('bairro', 'Bairro', form, erros, placeholder='Bairro', obrigatorio=true) }}
+      </div>
+      <div class="caixa" data-retirada {% if modalidade != 'RETIRADA' %}hidden{% endif %}>
+        <b>Retirada na loja</b>
+        <p>{{ loja.endereco }}<br>{{ loja.horario }}</p>
+      </div>
+    </section>
+
+    <aside class="caixa resumo">
+      <h2>Resumo</h2>
+      {% for i in itens %}
+      <div class="linha"><span>{{ i.quantidade }}× {{ i.produto.nome }}</span><span>{{ i.subtotal_centavos|moeda }}</span></div>
+      {% endfor %}
+      <div class="linha sep"><span>Subtotal</span><span>{{ subtotal|moeda }}</span></div>
+      <div class="linha"><span>Entrega</span><span data-valor-taxa>{{ 'Grátis' if taxa == 0 else (taxa|moeda) }}</span></div>
+      <div class="linha total"><span>Total</span><span data-valor-total>{{ (subtotal + taxa)|moeda }}</span></div>
+      {% if subtotal < pedido_minimo %}
+        <p class="msg-campo">O pedido mínimo é de {{ pedido_minimo|moeda }}.</p>
+      {% endif %}
+      <button class="btn" type="submit">Confirmar pedido</button>
+    </aside>
+  </div>
+</form>
+{% endblock %}

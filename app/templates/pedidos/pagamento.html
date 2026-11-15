@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import campo, csrf, alerta as caixa_alerta %}
+{% block titulo %}Pagamento{% endblock %}
+{% block conteudo %}
+<div class="estreito">
+  <h1>Pagamento</h1>
+  {{ caixa_alerta(alerta) }}
+  <div class="caixa">
+    <div class="linha"><span>Pedido #{{ pedido.id }} · {{ pedido.quantidade_itens }} cupcakes</span><span>{{ pedido.modalidade.rotulo }}</span></div>
+    <div class="linha total"><span>Total a pagar</span><span>{{ pedido.total_centavos|moeda }}</span></div>
+  </div>
+
+  <div class="abas" role="tablist" aria-label="Forma de pagamento">
+    {% for valor, nome in [('CREDITO', '💳 Crédito'), ('DEBITO', '💳 Débito'), ('PIX', '⚡ Pix')] %}
+    <a role="tab" href="{{ url_for('pedidos.pagamento', pedido_id=pedido.id, metodo=valor) }}"
+       class="{{ 'ativo' if metodo == valor }}" aria-selected="{{ 'true' if metodo == valor else 'false' }}">{{ nome }}</a>
+    {% endfor %}
+  </div>
+
+  {% if metodo == 'PIX' %}
+    <form method="post" action="{{ url_for('pedidos.pagar', pedido_id=pedido.id) }}">
+      {{ csrf() }}
+      <input type="hidden" name="metodo" value="PIX">
+      <p>Copie o código abaixo e pague no app do seu banco. Depois, toque em <b>Já paguei</b>.</p>
+      <div class="pix" id="codigo-pix">{{ codigo_pix }}</div>
+      <button type="button" class="btn sec" data-copiar="#codigo-pix">Copiar código Pix</button>
+      <button type="submit" class="btn verde">Já paguei {{ pedido.total_centavos|moeda }}</button>
+    </form>
+  {% else %}
+    <form method="post" action="{{ url_for('pedidos.pagar', pedido_id=pedido.id) }}" novalidate>
+      {{ csrf() }}
+      <input type="hidden" name="metodo" value="{{ metodo }}">
+      {{ campo('nome_cartao', 'Nome impresso no cartão', form, erros, placeholder='Como está no cartão', autocomplete='cc-name', obrigatorio=true) }}
+      {{ campo('numero_cartao', 'Número do cartão', form, erros, placeholder='0000 0000 0000 0000', autocomplete='cc-number', obrigatorio=true, extra='inputmode="numeric" maxlength="19"') }}
+      <div class="duas">
+        <div>{{ campo('validade', 'Validade', form, erros, placeholder='MM/AA', autocomplete='cc-exp', obrigatorio=true, extra='maxlength="7"') }}</div>
+        <div>{{ campo('cvv', 'CVV', form, erros, 'password', '3 dígitos', autocomplete='cc-csc', obrigatorio=true, extra='inputmode="numeric" maxlength="3"') }}</div>
+      </div>
+      <button type="submit" class="btn verde">🔒 Pagar {{ pedido.total_centavos|moeda }} no {{ 'crédito' if metodo == 'CREDITO' else 'débito' }}</button>
+    </form>
+  {% endif %}
+  <p class="demo">Ambiente de demonstração: o pagamento é simulado e nenhum valor é cobrado.
+    Use qualquer cartão com 16 dígitos; cartões terminados em 0000 são recusados.</p>
+  <p class="centro"><a class="link" href="{{ url_for('pedidos.detalhe', pedido_id=pedido.id) }}">Ver detalhes do pedido</a></p>
+</div>
+{% endblock %}

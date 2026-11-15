@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import status %}
+{% block titulo %}Meus pedidos{% endblock %}
+{% block conteudo %}
+<h1>Meus pedidos</h1>
+{% if not pedidos %}
+  <div class="vazio">
+    <div class="icone-g" aria-hidden="true">📦</div>
+    <h2>Você ainda não fez pedidos</h2>
+    <a class="btn" href="{{ url_for('vitrine.index') }}">Ver a vitrine</a>
+  </div>
+{% else %}
+<div class="grade-pedidos">
+  {% for p in pedidos %}
+  <a class="pedido" href="{{ url_for('pedidos.detalhe', pedido_id=p.id) }}">
+    <div class="linha"><b>Pedido #{{ p.id }}</b>{{ status(p.status) }}</div>
+    <div class="linha"><span>{{ p.criado_em|data }}</span><b>{{ p.total_centavos|moeda }}</b></div>
+    <span class="link">Ver detalhes →</span>
+  </a>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

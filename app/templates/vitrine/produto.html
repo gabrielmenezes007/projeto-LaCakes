@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import imagem_produto, csrf %}
+{% block titulo %}{{ produto.nome }}{% endblock %}
+{% block conteudo %}
+<a class="voltar" href="{{ url_for('vitrine.index') }}">← Voltar à vitrine</a>
+<div class="detalhe">
+  <div class="detalhe-img">{{ imagem_produto(produto, 'grande') }}</div>
+  <div class="detalhe-info">
+    <h1>{{ produto.nome }}</h1>
+    <span class="tag-cat">{{ produto.categoria.nome }}</span>
+    <div class="preco-g">{{ produto.preco_centavos|moeda }}</div>
+    {% if not produto.disponivel %}
+      <span class="selo estatico">Esgotado hoje</span>
+    {% elif produto.ultimas_unidades %}
+      <span class="selo ultimas estatico">Últimas unidades: restam {{ produto.estoque }}</span>
+    {% else %}
+      <p class="dica">{{ produto.estoque }} unidades disponíveis hoje</p>
+    {% endif %}
+
+    {% if produto.descricao %}<p>{{ produto.descricao }}</p>{% endif %}
+    {% if produto.ingredientes %}<h2>Ingredientes</h2><p>{{ produto.ingredientes }}</p>{% endif %}
+    {% if produto.alergenicos %}
+      <div class="contem"><b>Contém:</b> {{ produto.alergenicos }}</div>
+    {% endif %}
+
+    {% if produto.disponivel and maximo > 0 %}
+    <form method="post" action="{{ url_for('carrinho.adicionar', produto_id=produto.id) }}" class="form-qtd">
+      {{ csrf() }}
+      <input type="hidden" name="voltar" value="{{ url_for('vitrine.produto', produto_id=produto.id) }}">
+      <label for="quantidade">Quantidade</label>
+      <div class="qtd" data-stepper>
+        <button type="button" data-menos aria-label="Diminuir quantidade">−</button>
+        <input id="quantidade" name="quantidade" type="number" min="1" max="{{ maximo }}" value="1" inputmode="numeric">
+        <button type="button" data-mais aria-label="Aumentar quantidade">+</button>
+        <span class="dica">máx. {{ maximo }}{% if no_carrinho %} (já há {{ no_carrinho }} no carrinho){% endif %}</span>
+      </div>
+      <button class="btn" type="submit">Adicionar ao carrinho</button>
+    </form>
+    {% elif produto.disponivel %}
+      <div class="alerta aviso" role="status"><span aria-hidden="true">ℹ</span>
+        <span>Você já colocou no carrinho todas as unidades disponíveis deste sabor.</span></div>
+      <a class="btn sec" href="{{ url_for('carrinho.ver') }}">Ver carrinho</a>
+    {% else %}
+      <button class="btn des" type="button" disabled>Esgotado</button>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import campo, csrf, alerta %}
+{% block titulo %}Entrar{% endblock %}
+{% block conteudo %}
+<div class="estreito">
+  <h1>Entrar</h1>
+  <p>Acesse sua conta para finalizar o pedido e acompanhar suas compras.</p>
+  {{ alerta(erro) }}
+  <form method="post" novalidate>
+    {{ csrf() }}
+    <input type="hidden" name="next" value="{{ request.args.get('next', form.get('next', '')) }}">
+    {{ campo('email', 'E-mail', form, {}, 'email', 'seu@email.com', autocomplete='email', obrigatorio=true) }}
+    {{ campo('senha', 'Senha', form, {}, 'password', 'Sua senha', autocomplete='current-password', obrigatorio=true) }}
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+  <p class="centro">Ainda não tem conta?
+    <a class="link" href="{{ url_for('auth.cadastro', next=request.args.get('next')) }}">Criar conta</a></p>
+</div>
+{% endblock %}

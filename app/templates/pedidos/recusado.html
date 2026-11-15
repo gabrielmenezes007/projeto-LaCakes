@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block titulo %}Pagamento recusado{% endblock %}
+{% block conteudo %}
+<div class="estreito centro">
+  <div class="icone-g" aria-hidden="true">💳❌</div>
+  <h1>Pagamento recusado</h1>
+  <div class="alerta erro" role="alert"><span aria-hidden="true">⚠</span>
+    <span>O {{ pagamento.metodo.rotulo|lower }} final {{ pagamento.cartao_final }} não foi aprovado. <b>Nenhum valor foi cobrado.</b></span>
+  </div>
+  <p>Seu pedido #{{ pedido.id }} continua guardado como <b>Aguardando pagamento</b>.
+     Você pode tentar outro cartão, usar o débito ou pagar com Pix.</p>
+  <a class="btn" href="{{ url_for('pedidos.pagamento', pedido_id=pedido.id) }}">Tentar novamente</a>
+  <a class="btn sec" href="{{ url_for('pedidos.lista') }}">Ver meus pedidos</a>
+</div>
+{% endblock %}

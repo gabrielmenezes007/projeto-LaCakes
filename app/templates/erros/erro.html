@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block conteudo %}
+<div class="estreito centro">
+  <div class="cod-erro">{{ codigo }}</div>
+  <div class="icone-g" aria-hidden="true">{{ {403: '🔒', 404: '🧁❓', 413: '📷', 500: '🛠️'}.get(codigo, '⚠') }}</div>
+  <h1>{{ titulo }}</h1>
+  <p>{{ mensagem }}</p>
+  <a class="btn" href="{{ url_for('vitrine.index') }}">Voltar à vitrine</a>
+  {% if codigo == 403 %}<a class="btn sec" href="{{ url_for('auth.login') }}">Entrar com outra conta</a>{% endif %}
+</div>
+{% endblock %}

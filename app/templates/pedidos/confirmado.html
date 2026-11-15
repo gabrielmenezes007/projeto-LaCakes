@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block titulo %}Pedido confirmado{% endblock %}
+{% block conteudo %}
+<div class="estreito centro">
+  <div class="icone-g" aria-hidden="true">✅</div>
+  <h1>Pedido #{{ pedido.id }} confirmado!</h1>
+  <p>Pagamento aprovado. A confeitaria já recebeu seu pedido.</p>
+  <div class="caixa esquerda">
+    <div class="linha"><span>{{ pedido.quantidade_itens }} cupcakes</span><span>{{ pedido.subtotal_centavos|moeda }}</span></div>
+    <div class="linha"><span>Entrega</span><span>{{ 'Grátis' if pedido.taxa_entrega_centavos == 0 else (pedido.taxa_entrega_centavos|moeda) }}</span></div>
+    <div class="linha total"><span>Total pago</span><span>{{ pedido.total_centavos|moeda }}</span></div>
+    <div class="linha"><span>Forma de pagamento</span><span>{{ pedido.pagamento_aprovado.descricao }}</span></div>
+    {% if pedido.modalidade.value == 'ENTREGA' %}
+      <p><b>Entrega em:</b> {{ pedido.logradouro }}, {{ pedido.numero }}{% if pedido.complemento %} – {{ pedido.complemento }}{% endif %}, {{ pedido.bairro }} – Jaú/SP</p>
+    {% else %}
+      <p><b>Retirada em:</b> {{ loja.endereco }} · {{ loja.horario }}</p>
+    {% endif %}
+  </div>
+  <a class="btn" href="{{ url_for('pedidos.detalhe', pedido_id=pedido.id) }}">Acompanhar pedido</a>
+  <a class="btn sec" href="{{ url_for('vitrine.index') }}">Voltar à vitrine</a>
+</div>
+{% endblock %}

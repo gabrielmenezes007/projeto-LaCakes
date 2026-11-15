@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import imagem_produto, csrf %}
+{% block titulo %}Vitrine{% endblock %}
+{% block conteudo %}
+<section class="banner">
+  <b>Feitos hoje, fresquinhos 💜</b>
+  Peça até 17h e receba no mesmo dia em Jaú, ou retire na loja.
+</section>
+
+<nav class="chips" aria-label="Filtrar por categoria">
+  <a class="chip {{ 'ativo' if not categoria_ativa }}" href="{{ url_for('vitrine.index') }}"
+     {% if not categoria_ativa %}aria-current="page"{% endif %}>Todos</a>
+  {% for c in categorias %}
+  <a class="chip {{ 'ativo' if categoria_ativa and categoria_ativa.id == c.id }}"
+     href="{{ url_for('vitrine.index', categoria=c.id) }}"
+     {% if categoria_ativa and categoria_ativa.id == c.id %}aria-current="page"{% endif %}>{{ c.nome }}</a>
+  {% endfor %}
+</nav>
+
+{% if not produtos %}
+  <div class="vazio">
+    <div class="icone-g" aria-hidden="true">🧁</div>
+    {% if categoria_ativa %}
+      <h1>Nenhum cupcake nesta categoria hoje</h1>
+      <a class="btn sec" href="{{ url_for('vitrine.index') }}">Ver todos os cupcakes</a>
+    {% else %}
+      <h1>Nenhum cupcake disponível hoje. Volte mais tarde!</h1>
+    {% endif %}
+  </div>
+{% else %}
+<h1 class="sr">Cupcakes{% if categoria_ativa %} – {{ categoria_ativa.nome }}{% endif %}</h1>
+<div class="grade">
+  {% for p in produtos %}
+  <article class="card">
+    {% if not p.disponivel %}<span class="selo">Esgotado</span>
+    {% elif p.ultimas_unidades %}<span class="selo ultimas">Últimas unidades</span>{% endif %}
+    <a href="{{ url_for('vitrine.produto', produto_id=p.id) }}" class="card-link">
+      {{ imagem_produto(p) }}
+      <div class="info">
+        <h2 class="nome">{{ p.nome }}</h2>
+        <span class="tag-cat">{{ p.categoria.nome }}</span>
+        <div class="preco">{{ p.preco_centavos|moeda }}</div>
+      </div>
+    </a>
+    <div class="info acoes">
+      {% if p.disponivel %}
+      <form method="post" action="{{ url_for('carrinho.adicionar', produto_id=p.id) }}">
+        {{ csrf() }}
+        <input type="hidden" name="quantidade" value="1">
+        <input type="hidden" name="voltar" value="{{ request.full_path }}">
+        <button class="btn peq" type="submit" aria-label="Adicionar 1 {{ p.nome }} ao carrinho">+ Adicionar</button>
+      </form>
+      {% else %}
+      <button class="btn peq des" type="button" disabled>Esgotado</button>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

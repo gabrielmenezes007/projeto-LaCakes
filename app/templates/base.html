@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}Vitrine{% endblock %} · LaCakes Cupcakes Gourmet</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.svg') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body class="{% if area_admin %}admin{% endif %}">
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+  <header class="topo">
+    <div class="topo-interno">
+      <a class="logo" href="{{ url_for('admin.produtos') if area_admin else url_for('vitrine.index') }}">
+        <span aria-hidden="true">🧁</span> LaCakes<small>{{ 'Administração' if area_admin else 'Cupcakes gourmet' }}</small>
+      </a>
+      <nav class="menu-desktop" aria-label="Menu principal">
+        {% if area_admin %}
+          <a href="{{ url_for('admin.produtos') }}">Produtos</a>
+          <a href="{{ url_for('admin.pedidos') }}">Pedidos</a>
+          <a href="{{ url_for('vitrine.index') }}">Ver loja</a>
+        {% else %}
+          <a href="{{ url_for('vitrine.index') }}">Vitrine</a>
+          {% if current_user.is_authenticated %}<a href="{{ url_for('pedidos.lista') }}">Meus pedidos</a>{% endif %}
+          {% if current_user.is_authenticated and current_user.eh_admin %}<a href="{{ url_for('admin.produtos') }}">Administração</a>{% endif %}
+        {% endif %}
+      </nav>
+      <div class="icones">
+        {% if not area_admin %}
+        <a class="carrinho-ico" href="{{ url_for('carrinho.ver') }}" aria-label="Carrinho com {{ qtd_carrinho }} itens">
+          <span aria-hidden="true">🛒</span><span class="badge-n">{{ qtd_carrinho }}</span>
+        </a>
+        {% endif %}
+        {% if current_user.is_authenticated %}
+        <details class="menu-conta">
+          <summary class="avatar" aria-label="Menu da conta de {{ current_user.primeiro_nome }}">{{ current_user.iniciais }}</summary>
+          <div class="menu-conta-caixa">
+            <p>Olá, <b>{{ current_user.primeiro_nome }}</b>{% if current_user.eh_admin %} (admin){% endif %}</p>
+            <a href="{{ url_for('pedidos.lista') }}">Meus pedidos</a>
+            {% if current_user.eh_admin %}<a href="{{ url_for('admin.produtos') }}">Administração</a>{% endif %}
+            <form method="post" action="{{ url_for('auth.logout') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="link-botao">Sair</button>
+            </form>
+          </div>
+        </details>
+        {% else %}
+        <a class="entrar" href="{{ url_for('auth.login') }}">Entrar</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main id="conteudo" class="conteudo">
+    {% for categoria, mensagem in get_flashed_messages(with_categories=true) %}
+      <div class="alerta {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">
+        <span aria-hidden="true">{{ {'ok': '✔', 'erro': '⚠', 'aviso': 'ℹ'}.get(categoria, 'ℹ') }}</span>
+        <span>{{ mensagem }}</span>
+      </div>
+    {% endfor %}
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <footer class="rodape">
+    <p><b>{{ loja.nome }}</b> · {{ loja.endereco }} · {{ loja.horario }}</p>
+    <p class="demo">Ambiente de demonstração: os pagamentos são simulados e nenhum valor é cobrado.</p>
+  </footer>
+
+  {% if not area_admin %}
+  <nav class="rodape-nav" aria-label="Navegação rápida">
+    <a href="{{ url_for('vitrine.index') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('vitrine') }}"><span aria-hidden="true">🏠</span>Vitrine</a>
+    <a href="{{ url_for('carrinho.ver') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('carrinho') }}"><span aria-hidden="true">🛒</span>Carrinho</a>
+    <a href="{{ url_for('pedidos.lista') }}" class="{{ 'ativo' if request.endpoint in ('pedidos.lista', 'pedidos.detalhe') }}"><span aria-hidden="true">📦</span>Pedidos</a>
+    <a href="{{ url_for('auth.login') if not current_user.is_authenticated else url_for('pedidos.lista') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('auth') }}"><span aria-hidden="true">👤</span>Conta</a>
+  </nav>
+  {% endif %}
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

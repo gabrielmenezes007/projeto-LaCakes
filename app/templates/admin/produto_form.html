@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import campo, csrf, alerta as caixa_alerta, imagem_produto %}
+{% block titulo %}Admin – {{ 'Editar' if produto else 'Novo' }} cupcake{% endblock %}
+{% block conteudo %}
+<div class="estreito">
+  <a class="voltar" href="{{ url_for('admin.produtos') }}">← Produtos</a>
+  <h1>{{ 'Editar cupcake' if produto else 'Novo cupcake' }}</h1>
+  {{ caixa_alerta(alerta) }}
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {{ csrf() }}
+    {{ campo('nome', 'Nome', form, erros, placeholder='Ex.: Pistache com Frutas Vermelhas', obrigatorio=true) }}
+    <div class="grupo">
+      <label for="categoria_id">Categoria <span aria-hidden="true">*</span></label>
+      <select class="campo{% if erros.get('categoria_id') %} invalido{% endif %}" id="categoria_id" name="categoria_id" required>
+        <option value="">Escolha…</option>
+        {% for c in categorias %}
+        <option value="{{ c.id }}" {{ 'selected' if form.get('categoria_id') == c.id|string }}>{{ c.nome }}</option>
+        {% endfor %}
+      </select>
+      {% if erros.get('categoria_id') %}<p class="msg-campo">⚠ {{ erros.categoria_id }}</p>{% endif %}
+    </div>
+    <div class="grupo">
+      <label for="descricao">Descrição</label>
+      <textarea class="campo" id="descricao" name="descricao" rows="3">{{ form.get('descricao', '') }}</textarea>
+    </div>
+    <div class="grupo">
+      <label for="ingredientes">Ingredientes</label>
+      <textarea class="campo" id="ingredientes" name="ingredientes" rows="2">{{ form.get('ingredientes', '') }}</textarea>
+    </div>
+    {{ campo('alergenicos', 'Alergênicos', form, erros, placeholder='Ex.: glúten, leite, ovos', dica='Aparece em destaque como "Contém:" na página do produto.') }}
+    <div class="duas">
+      <div>{{ campo('preco', 'Preço (R$)', form, erros, placeholder='14,90', obrigatorio=true, extra='inputmode="decimal"') }}</div>
+      <div>{{ campo('estoque', 'Estoque do dia', form, erros, 'number', '0', obrigatorio=true, extra='min="0" max="500"') }}</div>
+    </div>
+    <div class="grupo">
+      <label for="imagem">Foto</label>
+      {% if produto %}<div class="foto-atual">{{ imagem_produto(produto, 'mini') }} <small>Foto atual</small></div>{% endif %}
+      <input class="upload{% if erros.get('imagem') %} invalido{% endif %}" id="imagem" name="imagem" type="file" accept=".jpg,.jpeg,.png,.webp">
+      {% if erros.get('imagem') %}<p class="msg-campo">⚠ {{ erros.imagem }}</p>
+      {% else %}<p class="dica">JPG, PNG ou WEBP até 2 MB · opcional (sem foto, usa a ilustração padrão)</p>{% endif %}
+    </div>
+    <label class="check"><input type="checkbox" name="ativo" {{ 'checked' if form.get('ativo') in ('on', '1', 'true') }}> Produto ativo (aparece na vitrine)</label>
+    <button class="btn" type="submit">Salvar produto</button>
+    <a class="btn sec" href="{{ url_for('admin.produtos') }}">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

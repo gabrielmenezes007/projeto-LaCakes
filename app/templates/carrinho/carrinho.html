@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import imagem_produto, csrf %}
+{% block titulo %}Carrinho{% endblock %}
+{% block conteudo %}
+{% if not itens %}
+  <div class="vazio">
+    <div class="icone-g" aria-hidden="true">🛒</div>
+    <h1>Seu carrinho está vazio</h1>
+    <p>Que tal escolher alguns cupcakes fresquinhos de hoje?</p>
+    <a class="btn" href="{{ url_for('vitrine.index') }}">Ver a vitrine</a>
+  </div>
+{% else %}
+<h1>Meu carrinho</h1>
+<div class="colunas">
+  <section class="lista-itens" aria-label="Itens do carrinho">
+    {% for i in itens %}
+    <div class="item">
+      {{ imagem_produto(i.produto, 'mini') }}
+      <div class="det">
+        <b>{{ i.produto.nome }}</b>
+        <small>{{ i.produto.preco_centavos|moeda }} cada</small>
+        <div class="item-acoes">
+          <form method="post" action="{{ url_for('carrinho.atualizar', produto_id=i.produto.id) }}" class="qtd" data-stepper data-auto>
+            {{ csrf() }}
+            <button type="button" data-menos aria-label="Diminuir {{ i.produto.nome }}">−</button>
+            <input name="quantidade" type="number" min="0" max="24" value="{{ i.quantidade }}" aria-label="Quantidade de {{ i.produto.nome }}">
+            <button type="button" data-mais aria-label="Aumentar {{ i.produto.nome }}">+</button>
+            <button type="submit" class="link-botao sem-js">Atualizar</button>
+          </form>
+          <form method="post" action="{{ url_for('carrinho.remover', produto_id=i.produto.id) }}">
+            {{ csrf() }}<button type="submit" class="link-botao remover">Remover</button>
+          </form>
+        </div>
+      </div>
+      <b class="valor">{{ i.subtotal_centavos|moeda }}</b>
+    </div>
+    {% endfor %}
+  </section>
+  <aside class="caixa resumo">
+    <div class="linha"><span>Subtotal ({{ qtd_carrinho }} {{ 'item' if qtd_carrinho == 1 else 'itens' }})</span><b>{{ subtotal|moeda }}</b></div>
+    <div class="linha"><span>Entrega</span><span>calculada no próximo passo</span></div>
+    {% if subtotal < pedido_minimo %}
+      <div class="alerta aviso" role="status"><span aria-hidden="true">ℹ</span>
+        <span>O pedido mínimo é de {{ pedido_minimo|moeda }}. Faltam {{ (pedido_minimo - subtotal)|moeda }}.</span></div>
+    {% endif %}
+    <a class="btn" href="{{ url_for('pedidos.checkout') }}">Finalizar pedido</a>
+    <a class="btn sec" href="{{ url_for('vitrine.index') }}">Continuar comprando</a>
+  </aside>
+</div>
+{% endif %}
+{% endblock %}

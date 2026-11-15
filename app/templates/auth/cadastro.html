@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import campo, csrf, alerta %}
+{% block titulo %}Criar conta{% endblock %}
+{% block conteudo %}
+<div class="estreito">
+  <h1>Criar conta</h1>
+  {{ alerta(mensagem) }}
+  <form method="post" novalidate>
+    {{ csrf() }}
+    <input type="hidden" name="next" value="{{ request.args.get('next', form.get('next', '')) }}">
+    {{ campo('nome', 'Nome completo', form, erros, placeholder='Como devemos te chamar?', autocomplete='name', obrigatorio=true) }}
+    {{ campo('email', 'E-mail', form, erros, 'email', 'seu@email.com', autocomplete='email', obrigatorio=true) }}
+    {{ campo('telefone', 'Telefone (WhatsApp)', form, erros, 'tel', '(14) 99999-9999', autocomplete='tel', obrigatorio=true) }}
+    {{ campo('senha', 'Senha', form, erros, 'password', 'Crie uma senha', 'Mínimo de 8 caracteres, com letras e números.', 'new-password', true) }}
+    {{ campo('confirmacao', 'Confirmar senha', form, erros, 'password', 'Repita a senha', autocomplete='new-password', obrigatorio=true) }}
+    <button class="btn" type="submit">Criar conta</button>
+  </form>
+  <p class="centro">Já tem conta? <a class="link" href="{{ url_for('auth.login') }}">Entrar</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{# Macros reutilizáveis das views #}
+
+{% macro campo(nome, rotulo, form, erros, tipo='text', placeholder='', dica='', autocomplete='', obrigatorio=false, extra='') -%}
+  {%- set erro = erros.get(nome) if erros else None -%}
+  <div class="grupo">
+    <label for="{{ nome }}">{{ rotulo }}{% if obrigatorio %} <span aria-hidden="true">*</span>{% endif %}</label>
+    <input class="campo{% if erro %} invalido{% endif %}" id="{{ nome }}" name="{{ nome }}" type="{{ tipo }}"
+           value="{{ form.get(nome, '') if tipo != 'password' else '' }}" placeholder="{{ placeholder }}"
+           {% if autocomplete %}autocomplete="{{ autocomplete }}"{% endif %}
+           {% if obrigatorio %}required{% endif %}
+           {% if erro %}aria-invalid="true" aria-describedby="erro-{{ nome }}"{% elif dica %}aria-describedby="dica-{{ nome }}"{% endif %}
+           {{ extra|safe }}>
+    {% if erro %}<p class="msg-campo" id="erro-{{ nome }}">⚠ {{ erro }}</p>
+    {% elif dica %}<p class="dica" id="dica-{{ nome }}">{{ dica }}</p>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro csrf() -%}
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+{%- endmacro %}
+
+{% macro alerta(mensagem, tipo='erro') -%}
+  {% if mensagem %}
+  <div class="alerta {{ tipo }}" role="alert"><span aria-hidden="true">⚠</span><span>{{ mensagem }}</span></div>
+  {% endif %}
+{%- endmacro %}
+
+{% macro imagem_produto(produto, classe='') -%}
+  <img class="img {{ classe }}" src="{{ url_for('static', filename=produto.caminho_imagem) }}"
+       alt="Cupcake {{ produto.nome }}" loading="lazy">
+{%- endmacro %}
+
+{% macro status(st) -%}
+  <span class="status {{ st.classe_css }}">{{ st.rotulo }}</span>
+{%- endmacro %}
