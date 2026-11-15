@@ -179,7 +179,7 @@
 - **Tema:** Carrinho, pedido e entrega
 - **Requerente:** Cliente
 - **Ação:** Como cliente, quero informar meu CEP e endereço e saber na hora se a loja entrega na minha região, para não fazer um pedido que não pode ser entregue.
-- **Comentários:** A loja entrega só na região próxima (CEPs que começam com 01 a 05). Validação simples pelo prefixo; não há integração com serviço de CEP nesta versão.
+- **Comentários:** A loja entrega só em Jaú/SP (CEPs de 17200-001 a 17229-999). Validação simples pela faixa de CEP; não há integração com serviço de CEP nesta versão.
 - **Prioridade:** B · **Pontos:** 3
 
 **Critérios de aceitação**

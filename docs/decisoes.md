@@ -22,3 +22,16 @@ Decisões de projeto e o motivo de cada uma.
 | D14 | Tons derivados da paleta: `#F3E8F1` (seleção), `#EADBE6` (cabeçalhos de tabela e telas públicas no mapa navegacional), `#DDEBE4` (etiquetas de categoria), `#E6D2E2` (destaque da etapa atual), `#451A3D` (amora escura) e borda `#E6DCD3`. | Variações claras/escuras das quatro cores principais, para fundos e bordas. Cores de status (vermelho de erro, amarelo de aviso) e os fundos das ilustrações dos cupcakes são independentes da paleta. |
 | D15 | Conteúdo do planejamento em uma **fonte única** (`scripts/conteudo_planejamento.py`), da qual saem os Markdown de `docs/planejamento` e o documento Word. | Evita que documentos diferentes fiquem com informações diferentes. |
 | D16 | Documentos Word/PDF e dados pessoais ficam **fora do repositório** (`.gitignore`); os dados de identificação são lidos de `scripts/dados_aluno.json`, que não é versionado. | O repositório é público; ele guarda só o projeto e sua documentação técnica. |
+
+## Desenvolvimento
+
+| # | Decisão | Motivo |
+|---|---|---|
+| D17 | Valores em dinheiro guardados em **centavos (inteiro)** no banco e no código. | Evita erros de arredondamento de ponto flutuante e funciona igual em SQLite, PostgreSQL e MySQL. |
+| D18 | Regras de negócio em uma camada de **serviços** (`app/services`), separada dos controllers. | Os controllers ficam só com HTTP; as regras podem ser testadas sem navegador. |
+| D19 | Enumerações gravadas como **VARCHAR + CHECK** (não ENUM nativo). | Portável entre os três bancos suportados e ainda bloqueia valores inválidos. |
+| D20 | Validação de formulários feita à mão nos serviços (sem WTForms); proteção **CSRF** pelo Flask-WTF. | Menos dependências e mensagens de erro exatamente como planejadas nos protótipos. |
+| D21 | Ilustrações SVG geradas por script para os cupcakes de exemplo; fotos reais podem ser enviadas pelo admin. | Evita problemas de direitos autorais com fotos da internet. |
+| D22 | Contas de teste com domínio reservado **`.test`** (`admin@lacakes.test`, `cliente@lacakes.test`). | Domínio reservado para testes, que não pertence a ninguém. |
+| D23 | Logout limpa a sessão inteira (inclusive o carrinho). | US07: outra pessoa pode usar o mesmo aparelho. |
+| D24 | Cartões de crédito/débito em formulário único; `iniciar.bat`/`iniciar.sh` sobem tudo com um comando. | Escopo enxuto e instalação simples para quem vai testar. |

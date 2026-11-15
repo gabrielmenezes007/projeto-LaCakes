@@ -83,7 +83,7 @@
 | RN04 | Limite de quantidade | A quantidade de cada item no carrinho vai de 1 a 24 unidades e nunca pode passar do estoque disponível do produto. |
 | RN05 | Pedido mínimo | O subtotal mínimo de um pedido é R$ 25,00, em qualquer modalidade (entrega ou retirada). |
 | RN06 | Taxa de entrega | Entrega custa R$ 8,00 (taxa fixa). Para subtotal a partir de R$ 120,00 a entrega é grátis. Retirada na loja não tem taxa. |
-| RN07 | Área de entrega | A loja só entrega em CEPs que começam com 01 a 05 (região atendida). Fora disso, o cliente só pode escolher retirada na loja. |
+| RN07 | Área de entrega | A loja fica em Jaú/SP (Rua das Flores, 120) e só entrega dentro da cidade: CEPs de 17200-001 a 17229-999. Fora dessa faixa, o cliente só pode escolher retirada na loja. |
 | RN08 | Baixa de estoque | O estoque só é baixado quando o pagamento é aprovado. Antes de aprovar, o sistema confere de novo se ainda há estoque de cada item. |
 | RN09 | Pagamento simulado | O pagamento é simulado e aceita cartão de crédito, cartão de débito ou Pix. Cartão (crédito ou débito): número com 16 dígitos, validade futura e CVV de 3 dígitos. Para fins de teste, cartões terminados em 0000 são recusados nas duas modalidades. Pix: um código "copia e cola" é gerado e o pagamento é aprovado quando o cliente confirma. |
 | RN10 | Fluxo de status do pedido | Status possíveis: Aguardando pagamento → Pago → Em preparo → Saiu para entrega (ou Pronto para retirada) → Entregue. O pedido só avança uma etapa por vez. Cancelado é um status final. |
