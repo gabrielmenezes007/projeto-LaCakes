@@ -123,14 +123,14 @@ def carrinho():
 
 def checkout(erro=False):
     alerta = ('<div class="alerta erro">⚠ <span>O pedido mínimo é de R$ 25,00. Adicione mais itens para continuar.</span></div>' if erro else "")
-    cep = campo("CEP", "13010-000", erro="Ainda não entregamos neste CEP. Você pode escolher Retirar na loja.") if erro else campo("CEP", "04538-132")
+    cep = campo("CEP", "13010-000", erro="Ainda não entregamos neste CEP. Você pode escolher Retirar na loja.") if erro else campo("CEP", "17201-000")
     sub, taxa, total = ("19,80", "8,00", "27,80") if erro else ("64,60", "8,00", "72,60")
     return (topo(6) + '<div class="conteudo"><span class="voltar">← Voltar ao carrinho</span><h1>Entrega e resumo</h1>' + alerta
             + '<div class="opcoes"><div class="opcao sel"><b>🚚 Entrega</b>R$ 8,00 · grátis acima de R$ 120</div>'
-            '<div class="opcao"><b>🏪 Retirar na loja</b>Sem taxa · R. das Flores, 120</div></div>'
-            + cep + '<div class="duas"><div>' + campo("Rua", "" if erro else "Av. Brig. Faria Lima", "Rua / avenida")
-            + '</div></div><div class="duas"><div>' + campo("Número", "" if erro else "1200", "Nº") + '</div><div>'
-            + campo("Complemento", "" if erro else "Apto 52", "Opcional") + '</div></div>' + campo("Bairro", "" if erro else "Itaim Bibi", "Bairro")
+            '<div class="opcao"><b>🏪 Retirar na loja</b>Sem taxa · R. das Flores, 120 – Jaú</div></div>'
+            + cep + '<div class="duas"><div>' + campo("Rua", "" if erro else "Rua das Palmeiras", "Rua / avenida")
+            + '</div></div><div class="duas"><div>' + campo("Número", "" if erro else "85", "Nº") + '</div><div>'
+            + campo("Complemento", "" if erro else "Apto 52", "Opcional") + '</div></div>' + campo("Bairro", "" if erro else "Centro", "Bairro")
             + f'<div class="caixa"><div class="linha"><span>Subtotal</span><span>R$ {sub}</span></div>'
             f'<div class="linha"><span>Entrega</span><span>R$ {taxa}</span></div><div class="linha total"><span>Total</span><span>R$ {total}</span></div></div>'
             '<div class="btn">Confirmar pedido</div></div>')
@@ -152,7 +152,7 @@ def confirmado():
             '<div class="linha"><span>6 cupcakes</span><span>R$ 64,60</span></div><div class="linha"><span>Entrega</span><span>R$ 8,00</span></div>'
             '<div class="linha total"><span>Total pago</span><span>R$ 72,60</span></div>'
             '<div class="linha"><span>Forma de pagamento</span><span>Crédito •••• 1111</span></div>'
-            '<p style="margin-top:10px"><b>Entrega em:</b> Av. Brig. Faria Lima, 1200 – Apto 52, Itaim Bibi</p></div>'
+            '<p style="margin-top:10px"><b>Entrega em:</b> Rua das Palmeiras, 85 – Apto 52, Centro – Jaú/SP</p></div>'
             '<div class="btn">Acompanhar pedido</div><div class="btn sec">Voltar à vitrine</div></div>' + nav("Pedidos"))
 
 
