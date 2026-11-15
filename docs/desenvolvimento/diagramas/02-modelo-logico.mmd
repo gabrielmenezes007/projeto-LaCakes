@@ -1,0 +1,74 @@
+erDiagram
+  CATEGORIA {
+    int id PK
+    varchar_40 nome UK
+    varchar_200 descricao
+  }
+  USUARIO {
+    int id PK
+    varchar_80 nome
+    varchar_120 email UK
+    varchar_255 senha_hash
+    varchar_20 telefone
+    varchar_7 perfil
+    datetime criado_em
+  }
+  PEDIDO {
+    int id PK
+    int usuario_id FK
+    varchar_20 status
+    varchar_8 modalidade
+    varchar_8 cep
+    varchar_120 logradouro
+    varchar_10 numero
+    varchar_60 complemento
+    varchar_60 bairro
+    int subtotal_centavos
+    int taxa_entrega_centavos
+    int total_centavos
+    datetime criado_em
+    datetime atualizado_em
+  }
+  PRODUTO {
+    int id PK
+    int categoria_id FK
+    varchar_80 nome UK
+    text descricao
+    text ingredientes
+    varchar_200 alergenicos
+    int preco_centavos
+    int estoque
+    varchar_200 imagem
+    bool ativo
+    datetime criado_em
+  }
+  HISTORICO_STATUS {
+    int id PK
+    int pedido_id FK
+    varchar_20 status
+    varchar_200 observacao
+    datetime criado_em
+  }
+  ITEM_PEDIDO {
+    int id PK
+    int pedido_id FK
+    int produto_id FK
+    int quantidade
+    int preco_unitario_centavos
+  }
+  PAGAMENTO {
+    int id PK
+    int pedido_id FK
+    varchar_7 metodo
+    varchar_9 status
+    int valor_centavos
+    varchar_4 cartao_final
+    varchar_40 codigo_transacao
+    datetime criado_em
+  }
+  USUARIO ||--o{ PEDIDO : "faz"
+  CATEGORIA ||--o{ PRODUTO : "agrupa"
+  PEDIDO ||--|{ ITEM_PEDIDO : "contém"
+  PRODUTO ||--o{ ITEM_PEDIDO : "aparece em"
+  PEDIDO ||--o{ PAGAMENTO : "tem tentativas"
+  PEDIDO ||--|{ HISTORICO_STATUS : "registra"

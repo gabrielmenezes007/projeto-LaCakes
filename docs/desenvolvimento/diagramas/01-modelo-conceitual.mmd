@@ -1,0 +1,40 @@
+erDiagram
+  USUARIO ||--o{ PEDIDO : "faz"
+  CATEGORIA ||--o{ PRODUTO : "agrupa"
+  PEDIDO ||--|{ ITEM_PEDIDO : "contém"
+  PRODUTO ||--o{ ITEM_PEDIDO : "aparece em"
+  PEDIDO ||--o{ PAGAMENTO : "é pago por"
+  PEDIDO ||--|{ HISTORICO_STATUS : "registra mudanças em"
+  USUARIO {
+    string nome
+    string email
+    string perfil
+  }
+  CATEGORIA {
+    string nome
+  }
+  PRODUTO {
+    string nome
+    money preco
+    int estoque_do_dia
+    bool ativo
+  }
+  PEDIDO {
+    string status
+    string modalidade
+    string endereco_de_entrega
+    money total
+  }
+  ITEM_PEDIDO {
+    int quantidade
+    money preco_unitario
+  }
+  PAGAMENTO {
+    string metodo
+    string resultado
+    money valor
+  }
+  HISTORICO_STATUS {
+    string status
+    datetime momento
+  }
