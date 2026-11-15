@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+instance/
+*.db
+.env
+scripts/node_modules/
+~$*
+
+# Documentos de entrega (Word/PDF) e dados pessoais ficam fora do repositório
+*.docx
+*.pdf
+scripts/dados_aluno.json
