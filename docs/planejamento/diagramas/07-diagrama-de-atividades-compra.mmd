@@ -1,0 +1,31 @@
+flowchart TD
+  I((Início)) --> A[Abrir vitrine]
+  A --> B{Filtrar por categoria?}
+  B -- sim --> B1[Escolher categoria] --> C
+  B -- não --> C[Abrir detalhes do cupcake]
+  C --> D{Tem estoque?}
+  D -- não --> D1[/Mostrar Esgotado/] --> A
+  D -- sim --> E[Escolher quantidade e adicionar ao carrinho]
+  E --> F{Continuar comprando?}
+  F -- sim --> A
+  F -- não --> G[Abrir carrinho e revisar]
+  G --> H{Está logado?}
+  H -- não --> H1[Login ou cadastro] --> J
+  H -- sim --> J[Escolher entrega ou retirada]
+  J --> K{Entrega?}
+  K -- sim --> K1[Informar CEP e endereço]
+  K1 --> K2{CEP atendido?}
+  K2 -- não --> K3[/Mostrar CEP fora da área/] --> J
+  K2 -- sim --> L
+  K -- não --> L{Subtotal maior ou igual a R$ 25?}
+  L -- não --> L1[/Mostrar pedido mínimo/] --> G
+  L -- sim --> M[Confirmar pedido: Aguardando pagamento]
+  M --> N[Escolher crédito, débito ou Pix]
+  N --> O{Estoque ainda disponível?}
+  O -- não --> O1[/Mostrar estoque insuficiente/] --> G
+  O -- sim --> P{Pagamento aprovado?}
+  P -- não --> P1[/Mostrar pagamento recusado/] --> N
+  P -- sim --> Q[Baixar estoque e marcar Pago]
+  Q --> R[Mostrar pedido confirmado]
+  R --> S[Loja avança: Em preparo, Saiu para entrega ou Pronto para retirada, Entregue]
+  S --> FIM((Fim))

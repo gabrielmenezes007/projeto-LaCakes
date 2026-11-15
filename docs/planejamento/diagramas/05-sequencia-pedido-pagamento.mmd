@@ -1,0 +1,39 @@
+sequenceDiagram
+  autonumber
+  actor C as Cliente
+  participant V as Telas (Checkout/Pagamento)
+  participant PC as PedidoController
+  participant PG as PagamentoService (simulado)
+  participant M as Models (Pedido, Produto, Pagamento)
+  participant BD as Banco de dados
+  C->>V: confirma pedido (modalidade, endereço)
+  V->>PC: POST /checkout
+  PC->>PC: valida CEP (RN07), taxa (RN06) e pedido mínimo (RN05)
+  alt alternativo: CEP fora da área ou abaixo do mínimo
+    PC-->>V: TELA06 com erro
+    V-->>C: ERRO04 com a mensagem da regra
+  else dados válidos
+    PC->>M: criar Pedido + Itens (preços congelados, RN15)
+    M->>BD: INSERT pedido, itens, historico (AGUARDANDO_PAGAMENTO)
+    PC-->>V: redireciona para TELA07 Pagamento
+    C->>V: escolhe crédito ou débito e informa o cartão
+    V->>PC: POST /pedidos/{id}/pagar
+    PC->>M: conferir estoque de cada item (RN08)
+    alt alternativo: estoque insuficiente
+      PC-->>V: ERRO06 "Estoque insuficiente para: sabor"
+    else estoque ok
+      PC->>PG: cobrar(valor, modalidade, cartão)
+      alt cenário normal: aprovado
+        PG-->>PC: APROVADO + código da transação
+        PC->>M: registrar Pagamento (modalidade), baixar estoque, status PAGO
+        M->>BD: INSERT pagamento / UPDATE produto, pedido
+        PC-->>V: TELA08 Pedido confirmado
+        V-->>C: número do pedido e resumo
+      else alternativo: recusado (cartão final 0000)
+        PG-->>PC: RECUSADO
+        PC->>M: registrar tentativa recusada
+        PC-->>V: ERRO05 Pagamento recusado
+        V-->>C: botão "Tentar novamente"
+      end
+    end
+  end

@@ -1,0 +1,25 @@
+flowchart LR
+  LOJA([Loja virtual LaCakes]):::centro
+  LOJA -- "exibe" --> VIT[Vitrine virtual]
+  VIT -- "organizada em" --> CAT[Categorias]
+  CAT -- "agrupam" --> PROD[Cupcakes]
+  PROD -- "possuem" --> INFO[Preço, ingredientes,<br/>alergênicos e foto]
+  PROD -- "têm" --> EST[Estoque do dia]
+  EST -- "define" --> DISP[Disponível ou Esgotado]
+  LOJA -- "atende" --> CLI[Cliente]
+  CLI -- "cria" --> CONTA[Conta: e-mail e senha]
+  CLI -- "monta" --> CAR[Carrinho]
+  CAR -- "contém" --> PROD
+  CAR -- "vira" --> PED[Pedido]
+  PED -- "tem" --> ENT[Entrega ou retirada]
+  ENT -- "pode gerar" --> TAXA[Taxa de entrega]
+  ENT -- "depende de" --> CEP[CEP atendido]
+  PED -- "é quitado por" --> PAG[Pagamento: crédito, débito ou Pix]
+  PAG -- "quando aprovado baixa" --> EST
+  PED -- "passa por" --> STATUS[Status: pago, em preparo,<br/>saiu para entrega, entregue]
+  CLI -- "acompanha" --> STATUS
+  LOJA -- "é gerida pela" --> ADM[Administradora: Laysa]
+  ADM -- "cadastra" --> PROD
+  ADM -- "informa" --> EST
+  ADM -- "atualiza" --> STATUS
+  classDef centro fill:#5D2452,color:#fff,stroke:#112F24,stroke-width:2px

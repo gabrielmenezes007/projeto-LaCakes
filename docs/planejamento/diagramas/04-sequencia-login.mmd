@@ -1,0 +1,22 @@
+sequenceDiagram
+  autonumber
+  actor C as Cliente
+  participant V as TELA03 Login (View)
+  participant A as AuthController
+  participant U as Usuario (Model)
+  participant BD as Banco de dados
+  C->>V: informa e-mail e senha e clica em Entrar
+  V->>A: POST /login (email, senha, csrf)
+  A->>U: buscar_por_email(email)
+  U->>BD: SELECT usuario WHERE email = ?
+  BD-->>U: registro (ou vazio)
+  alt cenário normal: credenciais válidas
+    A->>U: verificar_senha(senha)
+    U-->>A: verdadeiro
+    A->>A: login_user() e mantém carrinho da sessão
+    A-->>V: redireciona para a página de origem
+    V-->>C: vitrine com o nome do cliente no menu
+  else alternativo: e-mail não cadastrado ou senha errada
+    A-->>V: renderiza TELA03 com erro
+    V-->>C: ERRO01 "E-mail ou senha inválidos"
+  end

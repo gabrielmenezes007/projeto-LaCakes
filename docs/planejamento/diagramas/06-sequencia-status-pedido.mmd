@@ -1,0 +1,23 @@
+sequenceDiagram
+  autonumber
+  actor A as Administrador
+  participant T as TELA13 Admin Pedidos
+  participant AC as AdminController
+  participant P as Pedido (Model)
+  participant BD as Banco de dados
+  actor C as Cliente
+  A->>T: clica em "Avançar status" do pedido
+  T->>AC: POST /admin/pedidos/{id}/avancar
+  AC->>AC: verifica perfil ADMIN (RN13)
+  AC->>P: proximo_status()
+  alt cenário normal: existe próxima etapa (RN10)
+    P-->>AC: EM_PREPARO
+    AC->>P: avancar_status()
+    P->>BD: UPDATE pedido + INSERT historico_status
+    AC-->>T: lista atualizada "Status atualizado"
+    C->>AC: abre TELA10 Acompanhamento
+    AC-->>C: linha do tempo com a nova etapa
+  else alternativo: aguardando pagamento, entregue ou cancelado
+    P-->>AC: nenhuma etapa válida
+    AC-->>T: mensagem "Este pedido ainda não foi pago" ou "Pedido já finalizado"
+  end

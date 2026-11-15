@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="860" viewBox="0 0 1220 860" font-family="Arial, Helvetica, sans-serif">
+<defs><marker id="seta" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto"><path d="M0,0 L12,5 L0,10" fill="none" stroke="#333" stroke-width="1.5"/></marker><marker id="tri" markerWidth="18" markerHeight="16" refX="17" refY="8" orient="auto"><path d="M0,0 L18,8 L0,16 Z" fill="#fff" stroke="#333" stroke-width="1.5"/></marker></defs>
+<style>.tr{stroke:#333;stroke-width:2;fill:#fff}.at{font-size:15px;text-anchor:middle;font-weight:bold}.st{font-size:12px;text-anchor:middle;fill:#555}.uc{fill:#F3E8F1;stroke:#5D2452;stroke-width:1.6}.ut{font-size:14px;text-anchor:middle;dominant-baseline:middle}.id{font-size:11px;text-anchor:middle;fill:#5D2452;font-weight:bold}.as{stroke:#444;stroke-width:1.4}.dep{stroke:#444;stroke-width:1.4;stroke-dasharray:6 4;fill:none}.rot{font-size:12px;fill:#333;font-style:italic}</style>
+<rect x="0" y="0" width="100%" height="100%" fill="#fff"/>
+<rect x="250" y="30" width="720" height="810" rx="6" fill="#FAF4ED" stroke="#112F24" stroke-width="2"/>
+<text x="610" y="55" font-size="16" font-weight="bold" text-anchor="middle" fill="#112F24">Sistema LaCakes Cupcakes Gourmet</text>
+<line x1="138" y1="210" x2="298" y2="102" class="as"/>
+<line x1="138" y1="210" x2="289" y2="183" class="as"/>
+<line x1="138" y1="210" x2="291" y2="263" class="as"/>
+<line x1="138" y1="210" x2="303" y2="345" class="as"/>
+<line x1="138" y1="590" x2="300" y2="473" class="as"/>
+<line x1="138" y1="590" x2="288" y2="572" class="as"/>
+<line x1="138" y1="590" x2="294" y2="670" class="as"/>
+<line x1="138" y1="590" x2="309" y2="762" class="as"/>
+<line x1="1072" y1="280" x2="885" y2="181" class="as"/>
+<line x1="1072" y1="280" x2="892" y2="298" class="as"/>
+<line x1="1072" y1="280" x2="508" y2="452" class="as"/>
+<line x1="1072" y1="550" x2="892" y2="568" class="as"/>
+<line x1="110" y1="530" x2="110" y2="312" class="as" marker-end="url(#tri)"/>
+<line x1="400" y1="540" x2="400" y2="490" class="dep" marker-end="url(#seta)"/>
+<text x="408" y="509" class="rot">«include»</text>
+<line x1="512" y1="570" x2="668" y2="570" class="dep" marker-end="url(#seta)"/>
+<text x="560" y="564" class="rot">«include»</text>
+<line x1="400" y1="150" x2="400" y2="120" class="dep" marker-end="url(#seta)"/>
+<text x="408" y="129" class="rot">«extend»</text>
+<line x1="400" y1="750" x2="400" y2="710" class="dep" marker-end="url(#seta)"/>
+<text x="408" y="724" class="rot">«extend»</text>
+<ellipse cx="400" cy="90" rx="112" ry="30" class="uc"/>
+<text x="400" y="80" class="id">UC01</text>
+<text x="400" y="98" class="ut">Consultar vitrine</text>
+<ellipse cx="400" cy="180" rx="112" ry="30" class="uc"/>
+<text x="400" y="170" class="id">UC02</text>
+<text x="400" y="188" class="ut">Ver detalhes do cupcake</text>
+<ellipse cx="400" cy="270" rx="112" ry="30" class="uc"/>
+<text x="400" y="260" class="id">UC03</text>
+<text x="400" y="278" class="ut">Cadastrar cliente</text>
+<ellipse cx="400" cy="360" rx="112" ry="30" class="uc"/>
+<text x="400" y="350" class="id">UC05</text>
+<text x="400" y="368" class="ut">Gerenciar carrinho</text>
+<ellipse cx="400" cy="460" rx="112" ry="30" class="uc"/>
+<text x="400" y="450" class="id">UC04</text>
+<text x="400" y="468" class="ut">Autenticar usuário</text>
+<ellipse cx="400" cy="570" rx="112" ry="30" class="uc"/>
+<text x="400" y="560" class="id">UC06</text>
+<text x="400" y="578" class="ut">Finalizar pedido</text>
+<ellipse cx="400" cy="680" rx="112" ry="30" class="uc"/>
+<text x="400" y="670" class="id">UC08</text>
+<text x="400" y="688" class="ut">Acompanhar pedido</text>
+<ellipse cx="400" cy="780" rx="112" ry="30" class="uc"/>
+<text x="400" y="770" class="id">UC09</text>
+<text x="400" y="788" class="ut">Cancelar pedido</text>
+<ellipse cx="780" cy="170" rx="112" ry="30" class="uc"/>
+<text x="780" y="160" class="id">UC10</text>
+<text x="780" y="178" class="ut">Manter produtos</text>
+<ellipse cx="780" cy="300" rx="112" ry="30" class="uc"/>
+<text x="780" y="290" class="id">UC11</text>
+<text x="780" y="308" class="ut">Gerenciar pedidos da loja</text>
+<ellipse cx="780" cy="570" rx="112" ry="30" class="uc"/>
+<text x="780" y="560" class="id">UC07</text>
+<text x="780" y="578" class="ut">Realizar pagamento</text>
+<circle cx="110" cy="182" r="13" class="tr"/>
+<line x1="110" y1="195" x2="110" y2="230" class="tr"/>
+<line x1="88" y1="208" x2="132" y2="208" class="tr"/>
+<line x1="110" y1="230" x2="92" y2="258" class="tr"/>
+<line x1="110" y1="230" x2="128" y2="258" class="tr"/>
+<text x="110" y="278" class="at">Visitante</text>
+<circle cx="110" cy="562" r="13" class="tr"/>
+<line x1="110" y1="575" x2="110" y2="610" class="tr"/>
+<line x1="88" y1="588" x2="132" y2="588" class="tr"/>
+<line x1="110" y1="610" x2="92" y2="638" class="tr"/>
+<line x1="110" y1="610" x2="128" y2="638" class="tr"/>
+<text x="110" y="658" class="at">Cliente</text>
+<circle cx="1100" cy="252" r="13" class="tr"/>
+<line x1="1100" y1="265" x2="1100" y2="300" class="tr"/>
+<line x1="1078" y1="278" x2="1122" y2="278" class="tr"/>
+<line x1="1100" y1="300" x2="1082" y2="328" class="tr"/>
+<line x1="1100" y1="300" x2="1118" y2="328" class="tr"/>
+<text x="1100" y="348" class="at">Administrador</text>
+<circle cx="1100" cy="522" r="13" class="tr"/>
+<line x1="1100" y1="535" x2="1100" y2="570" class="tr"/>
+<line x1="1078" y1="548" x2="1122" y2="548" class="tr"/>
+<line x1="1100" y1="570" x2="1082" y2="598" class="tr"/>
+<line x1="1100" y1="570" x2="1118" y2="598" class="tr"/>
+<text x="1100" y="618" class="at">Serviço de pagamento</text>
+<text x="1100" y="636" class="st">«sistema externo»</text>
+</svg>

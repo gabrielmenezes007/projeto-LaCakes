@@ -1,0 +1,53 @@
+flowchart TD
+  T01[TELA01 Vitrine]:::pub
+  T02[TELA02 Detalhes do cupcake]:::pub
+  T03[TELA03 Login]:::pub
+  T04[TELA04 Cadastro]:::pub
+  T05[TELA05 Carrinho]:::pub
+  T06[TELA06 Checkout]:::cli
+  T07[TELA07 Pagamento]:::cli
+  T08[TELA08 Pedido confirmado]:::cli
+  T09[TELA09 Meus pedidos]:::cli
+  T10[TELA10 Acompanhamento]:::cli
+  T11[TELA11 Admin Produtos]:::adm
+  T12[TELA12 Admin Form produto]:::adm
+  T13[TELA13 Admin Pedidos]:::adm
+  E01[ERRO01 Login inválido]:::err
+  E02[ERRO02 Cadastro inválido]:::err
+  E03[ERRO03 Carrinho vazio]:::err
+  E04[ERRO04 CEP ou pedido mínimo]:::err
+  E05[ERRO05 Pagamento recusado]:::err
+  E06[ERRO06 Estoque insuficiente]:::err
+  E07[ERRO07 Página não encontrada]:::err
+  E08[ERRO08 Acesso negado]:::err
+  T01 --> T02
+  T01 -- menu --> T03
+  T01 -- menu --> T05
+  T01 -- menu --> T09
+  T01 -- menu admin --> T11
+  T02 -- adicionar --> T05
+  T02 -.-> E06
+  T02 -.-> E07
+  T03 --> T04
+  T03 -.-> E01
+  T04 -.-> E02
+  T04 --> T01
+  T05 -- finalizar --> T06
+  T05 -.-> E03
+  T06 -- sem login --> T03
+  T06 -.-> E04
+  T06 --> T07
+  T07 -.-> E05
+  T07 -.-> E06
+  E05 -- tentar novamente --> T07
+  T07 --> T08
+  T08 --> T10
+  T09 --> T10
+  T10 -.-> E08
+  T11 --> T12
+  T11 --> T13
+  T11 -.-> E08
+  classDef pub fill:#EADBE6,stroke:#5D2452
+  classDef cli fill:#FFE0B2,stroke:#E65100
+  classDef adm fill:#FFF59D,stroke:#9E9D24
+  classDef err fill:#FFCDD2,stroke:#C62828,stroke-dasharray:4 3
