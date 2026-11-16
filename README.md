@@ -56,18 +56,6 @@ docs/
 scripts/         geração de diagramas, telas, ilustrações e documentação do banco
 ```
 
-## Status
-
-- [x] Planejamento: [docs/planejamento](docs/planejamento/README.md)
-- [x] [Revisão do planejamento](docs/desenvolvimento/revisao-do-planejamento.md) (escopo, UML, IHC e dados)
-- [x] Banco de dados: [modelo de dados](docs/desenvolvimento/modelo-de-dados.md) e [dicionário](database/dicionario-de-dados.md)
-- [x] Código (front-end e back-end) e testes automatizados: [verificação e validação](docs/desenvolvimento/testes.md)
-- [x] [Manual de uso](docs/desenvolvimento/manual-de-uso.md) e [telas do sistema](docs/desenvolvimento/img/telas)
-- [x] Roteiro dos [testes com usuários](docs/testes-usuarios/README.md)
-- [ ] Testes com 5 usuários e correções
-
-## Regenerar os artefatos de planejamento
-
 Requer Node.js (Mermaid) e Microsoft Edge.
 
 ```bash
