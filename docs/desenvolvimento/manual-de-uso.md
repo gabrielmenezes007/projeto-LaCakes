@@ -22,8 +22,8 @@ Este manual explica como instalar o sistema e como usar cada parte dele, como cl
    (leva de 1 a 3 minutos). Nas próximas vezes é bem mais rápido.
 4. O navegador abre em **http://127.0.0.1:5000**. Para parar o sistema, feche a janela do terminal ou tecle `Ctrl+C`.
 
-Para **voltar o banco ao estado inicial** (apagando pedidos e cadastros de teste): `iniciar.bat --recriar`
-(ou `./iniciar.sh --recriar`).
+Para **voltar o banco ao estado inicial** (apagando pedidos e cadastros de teste): dois cliques em
+`iniciar-com-banco-limpo.bat` (ou, no terminal, `iniciar.bat --recriar` / `./iniciar.sh --recriar`).
 
 ### Instalação manual (alternativa)
 ```bash
@@ -102,6 +102,8 @@ export DATABASE_URL=postgresql://usuario:senha@localhost:5432/lacakes   # Linux/
 ```
 
 ## 6. Rodar os testes automatizados
+
+No Windows, dê dois cliques em `rodar-testes.bat`. Pelo terminal:
 
 ```bash
 .venv\Scripts\python -m pytest --cov=app

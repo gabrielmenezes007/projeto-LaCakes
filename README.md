@@ -13,6 +13,14 @@ HTML, CSS e JavaScript · pytest
 
 **Windows:** dê dois cliques em `iniciar.bat`. **Linux/macOS:** `./iniciar.sh`.
 
+Atalhos (Windows, dois cliques):
+
+| Arquivo | O que faz |
+|---|---|
+| `iniciar.bat` | Sobe o sistema mantendo os dados |
+| `iniciar-com-banco-limpo.bat` | Sobe o sistema com o banco no estado inicial (apaga pedidos e contas de teste) |
+| `rodar-testes.bat` | Roda os testes automatizados e mostra a cobertura |
+
 O script cria o ambiente virtual, instala as dependências, cria o banco com dados de exemplo e abre
 http://127.0.0.1:5000. Requer Python 3.10 ou mais novo.
 
