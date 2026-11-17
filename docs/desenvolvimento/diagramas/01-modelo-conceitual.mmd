@@ -24,6 +24,7 @@ erDiagram
     string modalidade
     string endereco_de_entrega
     money total
+    date previsao_de_preparo
   }
   ITEM_PEDIDO {
     int quantidade
@@ -37,4 +38,10 @@ erDiagram
   HISTORICO_STATUS {
     string status
     datetime momento
+  }
+  LOJA {
+    string endereco
+    string dias_de_funcionamento
+    time abre_as
+    time fecha_as
   }

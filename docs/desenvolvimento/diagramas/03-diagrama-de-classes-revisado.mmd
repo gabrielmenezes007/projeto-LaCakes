@@ -48,6 +48,7 @@ classDiagram
     +int total_centavos
     +datetime criado_em
     +datetime atualizado_em
+    +date previsao_preparo
     +calcular_totais(taxa)
     +registrar_status(status, obs)
     +proximo_status() StatusPedido
@@ -55,6 +56,17 @@ classDiagram
     +pode_cancelar() bool
     +etapas() list
     +pagamento_aprovado() Pagamento
+    +agendado() bool
+  }
+  class Loja {
+    +int id
+    +str endereco
+    +str dias_funcionamento
+    +time abre_as
+    +time fecha_as
+    +datetime atualizado_em
+    +dias() list
+    +horario_texto() str
   }
   class ItemPedido {
     +int id
@@ -111,3 +123,4 @@ classDiagram
   Carrinho ..> Produto : usa
   Pagamento ..> MetodoPagamento
   Pedido ..> StatusPedido
+  Pedido ..> Loja : previsão de preparo pelo horário
