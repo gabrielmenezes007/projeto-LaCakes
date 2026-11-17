@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import abas_admin %}
+{% block titulo %}Admin – Vendas{% endblock %}
+
+{% macro tabela_ranking(titulo, linhas, rotulo, unidade) -%}
+  <section class="caixa">
+    <h2>{{ titulo }}</h2>
+    {% if linhas %}
+    <table class="tabela">
+      <thead><tr><th scope="col">{{ rotulo }}</th><th scope="col" class="num">{{ unidade }}</th><th scope="col" class="num">Valor</th></tr></thead>
+      <tbody>
+      {% for l in linhas %}
+        <tr title="{{ l.nome }}: {{ l.quantidade }} {{ unidade|lower }} · {{ l.valor|moeda }}">
+          <td>{{ l.nome }}<span class="barra" aria-hidden="true"><span style="width: {{ l.percentual }}%"></span></span></td>
+          <td class="num">{{ l.quantidade }}</td>
+          <td class="num">{{ l.valor|moeda }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="vazio-texto">Sem vendas neste dia.</p>
+    {% endif %}
+  </section>
+{%- endmacro %}
+
+{% block conteudo %}
+{{ abas_admin('admin.vendas') }}
+<div class="titulo-acao">
+  <h1>Estatísticas de vendas</h1>
+</div>
+<form method="get" class="filtro">
+  <label for="data">Dia</label>
+  <a class="btn peq sec auto" href="{{ url_for('admin.vendas', data=anterior.isoformat()) }}" aria-label="Dia anterior">←</a>
+  <input class="campo campo-data" type="date" id="data" name="data" value="{{ dia.isoformat() }}" max="{{ hoje.isoformat() }}">
+  {% if proximo %}<a class="btn peq sec auto" href="{{ url_for('admin.vendas', data=proximo.isoformat()) }}" aria-label="Próximo dia">→</a>{% endif %}
+  <button class="btn peq auto" type="submit">Ver</button>
+  {% if dia != hoje %}<a class="link" href="{{ url_for('admin.vendas') }}">Voltar para hoje</a>{% endif %}
+</form>
+<p class="dica">{{ 'Hoje' if dia == hoje else 'Dia' }} {{ dia.strftime('%d/%m/%Y') }}. Contam como venda os pedidos pagos e não cancelados.</p>
+
+<div class="indicadores">
+  <div class="indicador"><span>Total vendido</span><b>{{ resumo.total|moeda }}</b></div>
+  <div class="indicador"><span>Pedidos pagos</span><b>{{ resumo.pedidos }}</b></div>
+  <div class="indicador"><span>Cupcakes vendidos</span><b>{{ resumo.cupcakes }}</b></div>
+  <div class="indicador"><span>Ticket médio</span><b>{{ resumo.ticket_medio|moeda }}</b></div>
+</div>
+<p class="dica">Taxas de entrega no total: {{ resumo.taxas_entrega|moeda }} · Aguardando pagamento: {{ resumo.aguardando }} · Cancelados: {{ resumo.cancelados }}</p>
+
+<div class="colunas-iguais">
+  {{ tabela_ranking('Cupcakes vendidos por sabor', resumo.por_sabor, 'Sabor', 'Unidades') }}
+  {{ tabela_ranking('Por categoria', resumo.por_categoria, 'Categoria', 'Unidades') }}
+  {{ tabela_ranking('Entrega ou retirada', resumo.por_modalidade, 'Modalidade', 'Pedidos') }}
+  {{ tabela_ranking('Formas de pagamento', resumo.por_pagamento, 'Forma', 'Pedidos') }}
+</div>
+
+<section class="caixa">
+  <h2>Últimos 7 dias</h2>
+  <table class="tabela">
+    <thead><tr><th scope="col">Dia</th><th scope="col" class="num">Pedidos</th><th scope="col" class="num">Cupcakes</th><th scope="col" class="num">Total</th></tr></thead>
+    <tbody>
+    {% for d in semana %}
+      <tr title="{{ d.dia.strftime('%d/%m') }}: {{ d.total|moeda }}">
+        <td><a href="{{ url_for('admin.vendas', data=d.dia.isoformat()) }}">{{ ['seg.', 'ter.', 'qua.', 'qui.', 'sex.', 'sáb.', 'dom.'][d.dia.weekday()] }} {{ d.dia.strftime('%d/%m') }}</a>
+          <span class="barra" aria-hidden="true"><span style="width: {{ d.percentual }}%"></span></span></td>
+        <td class="num">{{ d.pedidos }}</td>
+        <td class="num">{{ d.cupcakes }}</td>
+        <td class="num">{{ d.total|moeda }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endblock %}
