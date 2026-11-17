@@ -12,6 +12,19 @@ Categorias da vitrine (Clássicos, Recheados, Zero açúcar, Datas especiais).
 | `nome` | VARCHAR(40) | não |  | UNIQUE | Nome exibido no filtro da vitrine |
 | `descricao` | VARCHAR(200) | sim |  |  | Descrição curta da categoria |
 
+## Tabela `loja`
+
+
+
+| Coluna | Tipo | Nulo? | Padrão | Restrições | Descrição |
+|---|---|---|---|---|---|
+| `id` | INTEGER | não |  | PK | Identificador (a loja tem um único registro) |
+| `endereco` | VARCHAR(150) | não |  |  | Endereço da loja, usado na retirada |
+| `dias_funcionamento` | VARCHAR(7) | não |  |  | Dias abertos: dígitos de 0 (segunda) a 6 (domingo), ex.: 012345 |
+| `abre_as` | TIME | não |  | CHECK: abre_as < fecha_as | Horário de abertura |
+| `fecha_as` | TIME | não |  | CHECK: abre_as < fecha_as | Horário de fechamento (depois da abertura) |
+| `atualizado_em` | DATETIME | não | data/hora atual |  | Última alteração |
+
 ## Tabela `usuario`
 
 Pessoas cadastradas (clientes e administradores).
@@ -44,6 +57,7 @@ Pedidos dos clientes, com modalidade, endereço de entrega e totais.
 | `subtotal_centavos` | INTEGER | não |  | CHECK: total_centavos = subtotal_centavos + taxa_entrega_centavos; CHECK: subtotal_centavos >= 0 | Soma dos itens, em centavos |
 | `taxa_entrega_centavos` | INTEGER | não | 0 | CHECK: total_centavos = subtotal_centavos + taxa_entrega_centavos; CHECK: taxa_entrega_centavos >= 0 | Taxa de entrega (RN06) |
 | `total_centavos` | INTEGER | não |  | CHECK: total_centavos = subtotal_centavos + taxa_entrega_centavos; CHECK: subtotal_centavos >= 0 | Subtotal + taxa de entrega |
+| `previsao_preparo` | DATE | sim |  |  | Dia de preparo e entrega quando foi pago com a loja fechada (vazio = mesmo dia) |
 | `criado_em` | DATETIME | não | data/hora atual |  | Data e hora do pedido |
 | `atualizado_em` | DATETIME | não | data/hora atual |  | Última alteração |
 

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import abas_admin, campo, csrf, alerta as caixa_alerta %}
+{% block titulo %}Admin – Dados da loja{% endblock %}
+{% block conteudo %}
+{{ abas_admin('admin.loja') }}
+<h1>Dados da loja</h1>
+<p class="dica">Estes dados aparecem para os clientes e definem quando a loja está aberta. Pedidos pagos com a
+  loja fechada ficam para o próximo dia de funcionamento.</p>
+{{ caixa_alerta(alerta) }}
+<div class="colunas">
+  <form method="post" class="caixa" novalidate>
+    {{ csrf() }}
+    {{ campo('endereco', 'Endereço', form, erros, placeholder='Rua, número – Cidade/UF', obrigatorio=true, extra='maxlength="150"') }}
+    <fieldset class="dias{% if erros.get('dias') %} invalido{% endif %}" {% if erros.get('dias') %}aria-describedby="erro-dias"{% endif %}>
+      <legend>Dias de funcionamento <span aria-hidden="true">*</span></legend>
+      {% for nome in dias_semana %}
+      <label class="check"><input type="checkbox" name="dias" value="{{ loop.index0 }}"
+             {{ 'checked' if (loop.index0|string) in form.get('dias', []) }}> {{ nome }}</label>
+      {% endfor %}
+    </fieldset>
+    {% if erros.get('dias') %}<p class="msg-campo" id="erro-dias">⚠ {{ erros.dias }}</p>{% endif %}
+    <div class="duas">
+      <div>{{ campo('abre_as', 'Abre às', form, erros, tipo='time', obrigatorio=true) }}</div>
+      <div>{{ campo('fecha_as', 'Fecha às', form, erros, tipo='time', obrigatorio=true) }}</div>
+    </div>
+    <button class="btn" type="submit">Salvar dados da loja</button>
+  </form>
+
+  <aside class="caixa resumo">
+    <h2>Como aparece no site</h2>
+    <p>📍 {{ loja.endereco }}</p>
+    <p>🕘 {{ loja.horario }}</p>
+    <p class="situacao {{ 'aberta' if situacao_loja.aberta else 'fechada' }}"><span class="ponto" aria-hidden="true"></span>{{ situacao_loja.resumo }}</p>
+    {% if situacao_loja.aviso %}<p class="dica">{{ situacao_loja.aviso }}</p>{% endif %}
+  </aside>
+</div>
+{% endblock %}

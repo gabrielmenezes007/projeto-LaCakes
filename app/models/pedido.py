@@ -30,6 +30,11 @@ class StatusPedido(enum.Enum):
         }[self.value]
 
 
+# Status que contam como venda (pagamento aprovado e pedido não cancelado)
+STATUS_VENDIDOS = (StatusPedido.PAGO, StatusPedido.EM_PREPARO, StatusPedido.SAIU_PARA_ENTREGA,
+                   StatusPedido.PRONTO_PARA_RETIRADA, StatusPedido.ENTREGUE)
+
+
 class Modalidade(enum.Enum):
     ENTREGA = "ENTREGA"
     RETIRADA = "RETIRADA"
@@ -64,6 +69,8 @@ class Pedido(db.Model):
     subtotal_centavos = db.Column(db.Integer, nullable=False, comment="Soma dos itens, em centavos")
     taxa_entrega_centavos = db.Column(db.Integer, nullable=False, default=0, comment="Taxa de entrega (RN06)")
     total_centavos = db.Column(db.Integer, nullable=False, comment="Subtotal + taxa de entrega")
+    previsao_preparo = db.Column(db.Date, nullable=True,
+                                 comment="Dia de preparo e entrega quando foi pago com a loja fechada (vazio = mesmo dia)")
     criado_em = db.Column(db.DateTime, nullable=False, default=agora, comment="Data e hora do pedido")
     atualizado_em = db.Column(db.DateTime, nullable=False, default=agora, onupdate=agora,
                               comment="Última alteração")
@@ -124,6 +131,11 @@ class Pedido(db.Model):
             if h.status == status:
                 return h.criado_em
         return None
+
+    @property
+    def agendado(self):
+        """Pago com a loja fechada e ainda esperando o dia de preparo (mostra o selo de previsão)."""
+        return self.previsao_preparo is not None and self.status == StatusPedido.PAGO
 
     @property
     def pagamento_aprovado(self):

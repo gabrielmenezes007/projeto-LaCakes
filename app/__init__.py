@@ -31,14 +31,18 @@ def create_app(config_class=Config):
     erros.registrar(app)
     registrar_filtros(app)
 
+    from app.services import loja as servico_loja
+    app.jinja_env.filters["previsao"] = servico_loja.texto_previsao
+
     @app.context_processor
     def dados_globais():
         from app.services.carrinho import Carrinho
         from flask import session
+        dados = servico_loja.dados_da_loja()
         return {
             "qtd_carrinho": Carrinho(session).total_itens(),
-            "loja": {"nome": app.config["LOJA_NOME"], "endereco": app.config["LOJA_ENDERECO"],
-                     "horario": app.config["LOJA_HORARIO"]},
+            "loja": {"nome": app.config["LOJA_NOME"], "endereco": dados.endereco, "horario": dados.horario_texto},
+            "situacao_loja": servico_loja.situacao(dados, servico_loja.relogio()),
         }
 
     @app.cli.command("seed")

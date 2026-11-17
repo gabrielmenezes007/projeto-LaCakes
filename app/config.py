@@ -37,10 +37,8 @@ class Config:
     MAX_CONTENT_LENGTH = 2 * 1024 * 1024
     PASTA_UPLOADS = RAIZ / "app" / "static" / "uploads"
 
-    # Dados da loja
+    # Nome da loja. Endereço, dias e horário ficam na tabela "loja" (tela Dados da loja, na administração).
     LOJA_NOME = "LaCakes Cupcakes Gourmet"
-    LOJA_ENDERECO = "Rua das Flores, 120 – Jaú/SP"
-    LOJA_HORARIO = "Segunda a sábado, das 9h às 19h"
 
 
 class ConfigTeste(Config):

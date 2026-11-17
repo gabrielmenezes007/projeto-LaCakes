@@ -19,6 +19,26 @@ COMMENT ON COLUMN categoria.id IS 'Identificador da categoria';
 COMMENT ON COLUMN categoria.nome IS 'Nome exibido no filtro da vitrine';
 COMMENT ON COLUMN categoria.descricao IS 'Descrição curta da categoria';
 
+-- loja: 
+CREATE TABLE loja (
+	id SERIAL NOT NULL, 
+	endereco VARCHAR(150) NOT NULL, 
+	dias_funcionamento VARCHAR(7) NOT NULL, 
+	abre_as TIME WITHOUT TIME ZONE NOT NULL, 
+	fecha_as TIME WITHOUT TIME ZONE NOT NULL, 
+	atualizado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT ck_loja_horario CHECK (abre_as < fecha_as)
+);
+
+COMMENT ON TABLE loja IS '';
+COMMENT ON COLUMN loja.id IS 'Identificador (a loja tem um único registro)';
+COMMENT ON COLUMN loja.endereco IS 'Endereço da loja, usado na retirada';
+COMMENT ON COLUMN loja.dias_funcionamento IS 'Dias abertos: dígitos de 0 (segunda) a 6 (domingo), ex.: 012345';
+COMMENT ON COLUMN loja.abre_as IS 'Horário de abertura';
+COMMENT ON COLUMN loja.fecha_as IS 'Horário de fechamento (depois da abertura)';
+COMMENT ON COLUMN loja.atualizado_em IS 'Última alteração';
+
 -- usuario: Pessoas cadastradas (clientes e administradores).
 CREATE TABLE usuario (
 	id SERIAL NOT NULL, 
@@ -57,6 +77,7 @@ CREATE TABLE pedido (
 	subtotal_centavos INTEGER NOT NULL, 
 	taxa_entrega_centavos INTEGER NOT NULL, 
 	total_centavos INTEGER NOT NULL, 
+	previsao_preparo DATE, 
 	criado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
 	atualizado_em TIMESTAMP WITHOUT TIME ZONE NOT NULL, 
 	PRIMARY KEY (id), 
@@ -84,6 +105,7 @@ COMMENT ON COLUMN pedido.bairro IS 'Bairro de entrega';
 COMMENT ON COLUMN pedido.subtotal_centavos IS 'Soma dos itens, em centavos';
 COMMENT ON COLUMN pedido.taxa_entrega_centavos IS 'Taxa de entrega (RN06)';
 COMMENT ON COLUMN pedido.total_centavos IS 'Subtotal + taxa de entrega';
+COMMENT ON COLUMN pedido.previsao_preparo IS 'Dia de preparo e entrega quando foi pago com a loja fechada (vazio = mesmo dia)';
 COMMENT ON COLUMN pedido.criado_em IS 'Data e hora do pedido';
 COMMENT ON COLUMN pedido.atualizado_em IS 'Última alteração';
 

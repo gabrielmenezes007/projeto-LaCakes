@@ -14,6 +14,18 @@ CREATE TABLE categoria (
 	UNIQUE (nome)
 );
 
+-- loja: 
+CREATE TABLE loja (
+	id INTEGER NOT NULL, 
+	endereco VARCHAR(150) NOT NULL, 
+	dias_funcionamento VARCHAR(7) NOT NULL, 
+	abre_as TIME NOT NULL, 
+	fecha_as TIME NOT NULL, 
+	atualizado_em DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	CONSTRAINT ck_loja_horario CHECK (abre_as < fecha_as)
+);
+
 -- usuario: Pessoas cadastradas (clientes e administradores).
 CREATE TABLE usuario (
 	id INTEGER NOT NULL, 
@@ -43,6 +55,7 @@ CREATE TABLE pedido (
 	subtotal_centavos INTEGER NOT NULL, 
 	taxa_entrega_centavos INTEGER NOT NULL, 
 	total_centavos INTEGER NOT NULL, 
+	previsao_preparo DATE, 
 	criado_em DATETIME NOT NULL, 
 	atualizado_em DATETIME NOT NULL, 
 	PRIMARY KEY (id), 

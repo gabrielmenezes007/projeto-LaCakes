@@ -10,8 +10,11 @@ Contas de teste (ambiente de demonstração):
 """
 import sys
 
+from sqlalchemy import inspect, text
+
 from app.extensions import db
-from app.models import Categoria, Perfil, Produto, Usuario
+from app.models import Categoria, Loja, Perfil, Produto, Usuario
+from app.services.loja import PADRAO as LOJA
 
 CONTAS = [
     {"nome": "Laysa", "email": "admin@lacakes.test", "senha": "Admin@2026", "telefone": "(14) 99999-0001",
@@ -64,12 +67,27 @@ PRODUTOS = [
 ]
 
 
+def atualizar_estrutura():
+    """Atualiza um banco criado por uma versão anterior, sem apagar dados.
+
+    db.create_all() cria tabelas novas (ex.: loja), mas não adiciona colunas em tabelas que já existem.
+    """
+    colunas = {c["name"] for c in inspect(db.engine).get_columns("pedido")}
+    if "previsao_preparo" not in colunas:
+        with db.engine.begin() as conexao:
+            conexao.execute(text("ALTER TABLE pedido ADD COLUMN previsao_preparo DATE"))
+    if not db.session.scalar(db.select(db.func.count(Loja.id))):
+        db.session.add(Loja(**LOJA))
+        db.session.commit()
+
+
 def popular(recriar=False):
     if recriar:
         db.drop_all()
     db.create_all()
+    atualizar_estrutura()
     if db.session.scalar(db.select(db.func.count(Usuario.id))):
-        return "O banco já tem dados; nada foi alterado. Use --recriar para voltar ao estado inicial."
+        return "O banco já tem dados; a estrutura foi conferida e nada foi apagado. Use --recriar para voltar ao estado inicial."
 
     for dados in CONTAS:
         usuario = Usuario(nome=dados["nome"], email=dados["email"], telefone=dados["telefone"], perfil=dados["perfil"])

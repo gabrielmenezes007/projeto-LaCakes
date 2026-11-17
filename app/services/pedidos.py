@@ -3,6 +3,7 @@ from app.excecoes import ErroValidacao, EstoqueInsuficiente, RegraDeNegocio, Tra
 from app.extensions import db
 from app.models import (ItemPedido, Modalidade, Pagamento, Pedido, StatusPagamento, StatusPedido)
 from app.services import frete, pagamento
+from app.services import loja as servico_loja
 from app.utils import formatar_moeda
 
 
@@ -99,7 +100,14 @@ def pagar_pedido(pedido, metodo_texto, dados):
     if resultado.aprovado:
         for item in pedido.itens:
             item.produto.baixar_estoque(item.quantidade)
-        pedido.registrar_status(StatusPedido.PAGO, f"Pagamento aprovado – {metodo.rotulo}")
+        observacao = f"Pagamento aprovado – {metodo.rotulo}"
+        # US25: pago com a loja fechada -> preparo e entrega no próximo dia de funcionamento
+        loja, momento = servico_loja.dados_da_loja(), servico_loja.relogio()
+        if not servico_loja.esta_aberta(loja, momento):
+            pedido.previsao_preparo = servico_loja.dia_de_preparo(loja, momento)
+            if pedido.previsao_preparo:
+                observacao += f" (loja fechada: preparo em {pedido.previsao_preparo:%d/%m})"
+        pedido.registrar_status(StatusPedido.PAGO, observacao)
     db.session.commit()
     return registro
 

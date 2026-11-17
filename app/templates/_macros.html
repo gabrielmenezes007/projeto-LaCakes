@@ -33,3 +33,42 @@
 {% macro status(st) -%}
   <span class="status {{ st.classe_css }}">{{ st.rotulo }}</span>
 {%- endmacro %}
+
+{% macro abas_admin(ativa) -%}
+  <nav class="admin-abas" aria-label="Seções da administração">
+    {% for endpoint, nome in [('admin.produtos', 'Produtos'), ('admin.pedidos', 'Pedidos'), ('admin.vendas', 'Vendas'), ('admin.loja', 'Dados da loja')] %}
+    <a {% if endpoint == ativa %}class="ativo" aria-current="page"{% endif %} href="{{ url_for(endpoint) }}">{{ nome }}</a>
+    {% endfor %}
+  </nav>
+{%- endmacro %}
+
+{% macro selo_previsao(pedido) -%}
+  {% if pedido.agendado %}<span class="status s-agenda">🕘 {{ pedido.previsao_preparo|previsao }}</span>{% endif %}
+{%- endmacro %}
+
+{% macro card_produto(p, voltar) -%}
+  <article class="card">
+    {% if not p.disponivel %}<span class="selo">Esgotado</span>
+    {% elif p.ultimas_unidades %}<span class="selo ultimas">Últimas unidades</span>{% endif %}
+    <a href="{{ url_for('vitrine.produto', produto_id=p.id) }}" class="card-link">
+      {{ imagem_produto(p) }}
+      <div class="info">
+        <h2 class="nome">{{ p.nome }}</h2>
+        <span class="tag-cat">{{ p.categoria.nome }}</span>
+        <div class="preco">{{ p.preco_centavos|moeda }}</div>
+      </div>
+    </a>
+    <div class="info acoes">
+      {% if p.disponivel %}
+      <form method="post" action="{{ url_for('carrinho.adicionar', produto_id=p.id) }}">
+        {{ csrf() }}
+        <input type="hidden" name="quantidade" value="1">
+        <input type="hidden" name="voltar" value="{{ voltar }}">
+        <button class="btn peq" type="submit" aria-label="Adicionar 1 {{ p.nome }} ao carrinho">+ Adicionar</button>
+      </form>
+      {% else %}
+      <button class="btn peq des" type="button" disabled>Esgotado</button>
+      {% endif %}
+    </div>
+  </article>
+{%- endmacro %}

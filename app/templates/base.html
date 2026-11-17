@@ -11,15 +11,18 @@
   <a class="pular" href="#conteudo">Pular para o conteúdo</a>
   <header class="topo">
     <div class="topo-interno">
-      <a class="logo" href="{{ url_for('admin.produtos') if area_admin else url_for('vitrine.index') }}">
+      <a class="logo" href="{{ url_for('admin.produtos') if area_admin else url_for('vitrine.inicio') }}">
         <span aria-hidden="true">🧁</span> LaCakes<small>{{ 'Administração' if area_admin else 'Cupcakes gourmet' }}</small>
       </a>
       <nav class="menu-desktop" aria-label="Menu principal">
         {% if area_admin %}
           <a href="{{ url_for('admin.produtos') }}">Produtos</a>
           <a href="{{ url_for('admin.pedidos') }}">Pedidos</a>
-          <a href="{{ url_for('vitrine.index') }}">Ver loja</a>
+          <a href="{{ url_for('admin.vendas') }}">Vendas</a>
+          <a href="{{ url_for('admin.loja') }}">Dados da loja</a>
+          <a href="{{ url_for('vitrine.inicio') }}">Ver loja</a>
         {% else %}
+          <a href="{{ url_for('vitrine.inicio') }}">Início</a>
           <a href="{{ url_for('vitrine.index') }}">Vitrine</a>
           {% if current_user.is_authenticated %}<a href="{{ url_for('pedidos.lista') }}">Meus pedidos</a>{% endif %}
           {% if current_user.is_authenticated and current_user.eh_admin %}<a href="{{ url_for('admin.produtos') }}">Administração</a>{% endif %}
@@ -52,6 +55,9 @@
   </header>
 
   <main id="conteudo" class="conteudo">
+    {% if not area_admin and not situacao_loja.aberta and request.endpoint != 'vitrine.inicio' %}
+      <div class="alerta aviso loja-fechada" role="status"><span aria-hidden="true">🌙</span><span>{{ situacao_loja.aviso }}</span></div>
+    {% endif %}
     {% for categoria, mensagem in get_flashed_messages(with_categories=true) %}
       <div class="alerta {{ categoria }}" role="{{ 'alert' if categoria == 'erro' else 'status' }}">
         <span aria-hidden="true">{{ {'ok': '✔', 'erro': '⚠', 'aviso': 'ℹ'}.get(categoria, 'ℹ') }}</span>
@@ -68,7 +74,8 @@
 
   {% if not area_admin %}
   <nav class="rodape-nav" aria-label="Navegação rápida">
-    <a href="{{ url_for('vitrine.index') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('vitrine') }}"><span aria-hidden="true">🏠</span>Vitrine</a>
+    <a href="{{ url_for('vitrine.inicio') }}" class="{{ 'ativo' if request.endpoint == 'vitrine.inicio' }}"><span aria-hidden="true">🏠</span>Início</a>
+    <a href="{{ url_for('vitrine.index') }}" class="{{ 'ativo' if request.endpoint in ('vitrine.index', 'vitrine.produto') }}"><span aria-hidden="true">🧁</span>Vitrine</a>
     <a href="{{ url_for('carrinho.ver') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('carrinho') }}"><span aria-hidden="true">🛒</span>Carrinho</a>
     <a href="{{ url_for('pedidos.lista') }}" class="{{ 'ativo' if request.endpoint in ('pedidos.lista', 'pedidos.detalhe') }}"><span aria-hidden="true">📦</span>Pedidos</a>
     <a href="{{ url_for('auth.login') if not current_user.is_authenticated else url_for('pedidos.lista') }}" class="{{ 'ativo' if request.endpoint and request.endpoint.startswith('auth') }}"><span aria-hidden="true">👤</span>Conta</a>

@@ -4,6 +4,14 @@ erDiagram
     varchar_40 nome UK
     varchar_200 descricao
   }
+  LOJA {
+    int id PK
+    varchar_150 endereco
+    varchar_7 dias_funcionamento
+    time abre_as
+    time fecha_as
+    datetime atualizado_em
+  }
   USUARIO {
     int id PK
     varchar_80 nome
@@ -26,6 +34,7 @@ erDiagram
     int subtotal_centavos
     int taxa_entrega_centavos
     int total_centavos
+    date previsao_preparo
     datetime criado_em
     datetime atualizado_em
   }
