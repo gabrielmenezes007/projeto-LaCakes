@@ -15,3 +15,9 @@ funcionou, o que não funcionou e o que não foi testado.
    resultado em [docs/desenvolvimento/testes.md](../desenvolvimento/testes.md) e no laudo de qualidade.
 
 As respostas com os nomes dos testadores ficam só no documento de entrega, fora do repositório.
+
+## Resultado (16/11/2026)
+
+As 15 tarefas do roteiro funcionaram para os 5 testadores. Eles pediram 5 melhorias (tela inicial, rua e bairro
+pelo CEP, estatísticas de vendas, aviso de loja fechada e cadastro dos dados da loja), todas implementadas no mesmo
+dia. Os detalhes estão em [docs/desenvolvimento/testes.md](../desenvolvimento/testes.md#33-validação-com-usuários-5-testadores).

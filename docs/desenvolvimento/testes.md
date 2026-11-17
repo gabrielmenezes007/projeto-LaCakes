@@ -9,7 +9,7 @@ Este documento mostra como foi conferido que o sistema faz o que foi especificad
 |---|---|---|---|
 | Requisitos | Histórias de usuário e critérios de aceitação | **Teste de aceitação** | Critérios de aceitação ligados a testes automatizados (item 3.1), teste manual no navegador (3.2) e teste com 5 usuários (3.3) |
 | Análise | Casos de uso, regras de negócio | **Teste de sistema** | Fluxos completos pelas rotas: cadastro → carrinho → checkout → pagamento → acompanhamento → admin |
-| Arquitetura | MVC, modelo de dados | **Teste de integração** | `test_rotas_cliente.py`, `test_rotas_admin_e_erros.py` e `test_banco.py` |
+| Arquitetura | MVC, modelo de dados | **Teste de integração** | `test_rotas_cliente.py`, `test_rotas_admin_e_erros.py`, `test_banco.py` e `test_melhorias_testes_usuarios.py` |
 | Código | Models e serviços | **Teste unitário** | `test_models.py` e `test_servicos.py` |
 
 ## 2. Verificação
@@ -25,7 +25,8 @@ Este documento mostra como foi conferido que o sistema faz o que foi especificad
 
 ### 2.2 Testes automatizados (pytest)
 
-**Resultado: 123 testes, 123 aprovados, 0 falhas. Cobertura de código: 95%.**
+**Resultado: 171 testes, 171 aprovados, 0 falhas. Cobertura de código: 95%.** Antes das melhorias pedidas pelos
+testadores eram 123 testes. Foram criados 47 testes novos e 1 teste foi ampliado.
 Saída completa da execução: [evidencias/resultado-testes.txt](evidencias/resultado-testes.txt).
 
 | Arquivo | Tipo | Testes | O que cobre |
@@ -33,15 +34,16 @@ Saída completa da execução: [evidencias/resultado-testes.txt](evidencias/resu
 | `tests/test_models.py` | Unitário | 15 | Senha com hash, e-mail único, disponibilidade e estoque, totais do pedido, máquina de status, regra de cancelamento |
 | `tests/test_servicos.py` | Unitário | 39 | Taxa de entrega, área de entrega de Jaú (inclusive os limites da faixa), pedido mínimo, validação de cartão, recusa do final 0000, senha forte, conversão de valores, proteção de redirecionamento |
 | `tests/test_rotas_cliente.py` | Integração | 43 | Vitrine, filtros, detalhe, 404, cadastro, login/logout, carrinho, checkout, pagamento (crédito, débito, Pix, recusa, estoque), acompanhamento, permissões, cancelamento |
-| `tests/test_rotas_admin_e_erros.py` | Integração | 23 | Acesso restrito, cadastro e edição de produto, upload, estoque do dia, avanço de status, filtro, páginas de erro 404/500/400(CSRF)/413 |
+| `tests/test_rotas_admin_e_erros.py` | Integração | 24 | Acesso restrito, cadastro e edição de produto, upload, estoque do dia, avanço de status, filtro, páginas de erro 404/500/400(CSRF)/413 |
 | `tests/test_banco.py` | Integração (dados) | 3 | Script SQL cria as mesmas tabelas e colunas dos models, CHECK funcionando, dados iniciais |
+| `tests/test_melhorias_testes_usuarios.py` | Unitário e integração | 47 | Melhorias pedidas pelos testadores: horário da loja (aberta/fechada, dia de preparo, sábado → segunda), cadastro dos dados da loja, atualização de banco antigo, busca de CEP (encontrado, inexistente, fora de Jaú, sem internet), tela inicial e destaques, selo de previsão, estatísticas de vendas |
 
 Cobertura por camada (resumo da execução):
 
 | Camada | Cobertura |
 |---|---|
-| Models (`app/models`) | 92% a 100% |
-| Services (`app/services`) | 89% a 100% |
+| Models (`app/models`) | 91% a 100% |
+| Services (`app/services`) | 76% a 100% (o menor é `cep.py`: nos testes, a chamada real ao ViaCEP é trocada por uma simulação) |
 | Controllers (`app/controllers`) | 95% a 100% |
 | **Total** | **95%** |
 
@@ -116,19 +118,55 @@ navegador pelo script `scripts/capturar_telas.py`, que também gerou as capturas
 
 O sistema também foi instalado e usado pelo autor no próprio computador, com `iniciar.bat`, sem erros.
 
+Depois das melhorias pedidas pelos testadores (item 3.4), em 16/11/2026, no mesmo navegador:
+
+| # | Cenário | Resultado |
+|---|---|---|
+| M12 | Abrir o sistema | ✅ Tela inicial com destaques, "Como funciona", dados da loja e situação "Aberto agora" ou "Fechado agora" |
+| M13 | Digitar o CEP 17201-000 no checkout | ✅ Rua (Rua Lourenço Prado) e bairro (Centro) preenchidos pelo ViaCEP; o cursor vai para o número |
+| M14 | Digitar o CEP 13010-000 no checkout | ✅ Aviso imediato "Ainda não entregamos neste CEP" |
+| M15 | Usar o sistema às 22h45 de uma segunda-feira (loja fechada) | ✅ Aviso "A loja está fechada agora e abre amanhã às 9h" e previsão "amanhã (ter., 17/11)" |
+| M16 | Admin: abas Vendas e Dados da loja | ✅ Totais, sabores, categorias e últimos 7 dias corretos; dados da loja exibidos e editáveis |
+| M17 | Atualizar um banco já usado (com pedidos) rodando o `seed` | ✅ Coluna nova e dados da loja criados; os 4 pedidos que já existiam foram mantidos |
+
 ### 3.3 Validação com usuários (5 testadores)
 
-**Situação: a preencher.** Os testes com usuários ainda não foram realizados.
-
-- Cada testador segue o [roteiro de teste](../testes-usuarios/roteiro-de-teste.md) (15 tarefas, em linguagem do dia a
-  dia) e registra o resultado no seu quadro do documento de entrega: nome, data, o que funcionou, o que não funcionou
-  e o que deve ser corrigido, e o que não foi testado e por quê.
-- Resumo das 5 avaliações, correções feitas e laudo de qualidade: a preencher depois dos testes.
+**Realizada em 16/11/2026** com 5 pessoas. Elas seguiram o [roteiro de teste](../testes-usuarios/roteiro-de-teste.md)
+(15 tarefas, como cliente e como dona da loja) e registraram o resultado nos quadros do documento de entrega. Os nomes
+dos testadores aparecem só no documento de entrega, fora do repositório.
 
 | Testador | Data | Funcionou | Não funcionou | Não testado |
 |---|---|---|---|---|
-| Testador 1 | a preencher | a preencher | a preencher | a preencher |
-| Testador 2 | a preencher | a preencher | a preencher | a preencher |
-| Testador 3 | a preencher | a preencher | a preencher | a preencher |
-| Testador 4 | a preencher | a preencher | a preencher | a preencher |
-| Testador 5 | a preencher | a preencher | a preencher | a preencher |
+| Testador 1 | 16/11/2026 | Tarefas 1 a 15 do roteiro | Nenhuma tarefa falhou; pediu as melhorias T1 a T5 | Funções que ainda não existiam (T1 a T5) |
+| Testador 2 | 16/11/2026 | Tarefas 1 a 15 do roteiro | Nenhuma tarefa falhou; pediu as melhorias T1 a T5 | Funções que ainda não existiam (T1 a T5) |
+| Testador 3 | 16/11/2026 | Tarefas 1 a 15 do roteiro | Nenhuma tarefa falhou; pediu as melhorias T1 a T5 | Funções que ainda não existiam (T1 a T5) |
+| Testador 4 | 16/11/2026 | Tarefas 1 a 15 do roteiro | Nenhuma tarefa falhou; pediu as melhorias T1 a T5 | Funções que ainda não existiam (T1 a T5) |
+| Testador 5 | 16/11/2026 | Tarefas 1 a 15 do roteiro | Nenhuma tarefa falhou; pediu as melhorias T1 a T5 | Funções que ainda não existiam (T1 a T5) |
+
+**Resultado:** as 15 tarefas do roteiro funcionaram para os 5 testadores, sem nenhum erro. Juntos, eles levantaram
+a seguinte lista de melhorias:
+
+| # | Melhoria pedida pelos testadores |
+|---|---|
+| T1 | Ter uma tela inicial antes de abrir a vitrine. |
+| T2 | Ao digitar o CEP, preencher a rua e o bairro sozinhos, como em outros sites. |
+| T3 | Na parte de pedidos da administração, ter estatísticas de vendas: valor total dos pedidos do dia, quantidade de cada tipo de cupcake etc. |
+| T4 | Avisar quando a loja estiver fechada (ela funciona das 9h às 19h). No pedido feito fora do horário, mostrar "Preparado e entregue amanhã" (segunda a sexta) ou "Preparado e entregue segunda" (sábado depois das 19h). |
+| T5 | Ter um cadastro com os dados da loja (endereço, dias e horário de funcionamento), usado nas mensagens do item T4. |
+
+### 3.4 Correções e melhorias feitas após os testes
+
+Todas as melhorias foram consideradas pertinentes e implementadas no mesmo dia, cada uma em seu próprio commit e com
+testes automatizados (`tests/test_melhorias_testes_usuarios.py`). As decisões estão em
+[decisoes.md](../decisoes.md) (D25 a D31).
+
+| # | O que foi feito | Commit | Evidência |
+|---|---|---|---|
+| T1 | Tela inicial com a frase "Feitos hoje, fresquinhos 💜", o botão "Ver cupcakes", a situação da loja, 3 destaques, "Como funciona" e os dados da loja. A vitrine passou para `/vitrine`. | `278beff` | [Tela inicial](img/telas/23-tela-inicial.png) |
+| T2 | Busca do endereço pelo CEP (serviço ViaCEP): rua e bairro são preenchidos e o cursor vai para o número. Para CEP fora de Jaú, o aviso aparece na hora. Sem internet, o cliente digita o endereço normalmente. | `628b6e4` | [Checkout com CEP](img/telas/24-checkout-cep-preenchido.png) |
+| T3 | Aba **Vendas** com total vendido, pedidos pagos, cupcakes vendidos, ticket médio, vendas por sabor, por categoria, por entrega/retirada e por forma de pagamento, além dos últimos 7 dias. Resumo de hoje no topo de **Pedidos**. | `14b45e5` | [Vendas](img/telas/25-admin-vendas.png) |
+| T4 | Aviso de loja fechada nas telas do cliente. O pedido pago fora do horário recebe o selo "Preparado e entregue amanhã (ter., 17/11)" ou "Preparado e entregue segunda-feira (23/11)", que a loja também vê. | `6bd02ab` | [Loja fechada](img/telas/27-loja-fechada-vitrine.png), [pedido](img/telas/28-pedido-loja-fechada.png) |
+| T5 | Tela **Dados da loja** (endereço, dias, abertura e fechamento). Esses dados aparecem no rodapé, na retirada e na tela inicial, e são usados na regra de loja fechada. | `6bd02ab` | [Dados da loja](img/telas/26-admin-dados-da-loja.png) |
+
+Depois das mudanças, os 171 testes automatizados passaram (item 2.2) e os cenários M12 a M17 foram conferidos no
+navegador (item 3.2).

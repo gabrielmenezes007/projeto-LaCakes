@@ -2,9 +2,10 @@
 
 Autor: Gabriel M. O.
 
-Sistema web responsivo para a confeitaria LaCakes (Jaú/SP) vender cupcakes pela internet: vitrine virtual,
-carrinho, pedido, pagamento simulado (crédito, débito ou Pix), entrega ou retirada na loja, acompanhamento do
-pedido e área administrativa.
+Sistema web responsivo para a confeitaria LaCakes (Jaú/SP) vender cupcakes pela internet: tela inicial, vitrine
+virtual, carrinho, pedido com busca do endereço pelo CEP, pagamento simulado (crédito, débito ou Pix), entrega ou
+retirada na loja, aviso de loja fechada, acompanhamento do pedido e área administrativa (produtos, pedidos,
+estatísticas de vendas e dados da loja).
 
 **Tecnologias:** Python 3 · Flask (padrão MVC) · SQLAlchemy · SQLite (ou PostgreSQL/MySQL via `DATABASE_URL`) ·
 HTML, CSS e JavaScript · pytest
@@ -40,16 +41,17 @@ Passo a passo completo, telas e mensagens de erro: [manual de uso](docs/desenvol
 .venv\Scripts\python -m pytest --cov=app        # Linux/macOS: .venv/bin/python -m pytest --cov=app
 ```
 
-São mais de 120 testes (models, regras de negócio, rotas, permissões, páginas de erro e o script SQL), com
-cobertura acima de 90%.
+São 171 testes (models, regras de negócio, rotas, permissões, páginas de erro, horário da loja, busca de CEP,
+estatísticas e o script SQL), com 95% de cobertura.
 
 ## Arquitetura (MVC)
 
 ```
 app/
-  models/        M – entidades SQLAlchemy (Usuario, Categoria, Produto, Pedido, ItemPedido, Pagamento, HistoricoStatus)
-  services/      M – regras de negócio (carrinho, frete, pagamento simulado, pedidos, contas, produtos)
-  templates/     V – páginas Jinja2 (vitrine, conta, carrinho, checkout, pagamento, pedidos, admin, erros)
+  models/        M – entidades SQLAlchemy (Usuario, Categoria, Produto, Pedido, ItemPedido, Pagamento, HistoricoStatus, Loja)
+  services/      M – regras de negócio (carrinho, frete, pagamento simulado, pedidos, contas, produtos,
+                     horário da loja, CEP, estatísticas)
+  templates/     V – páginas Jinja2 (início, vitrine, conta, carrinho, checkout, pagamento, pedidos, admin, erros)
   static/        V – CSS responsivo, JavaScript e ilustrações
   controllers/   C – rotas organizadas em blueprints
   config.py      configurações (banco via DATABASE_URL)

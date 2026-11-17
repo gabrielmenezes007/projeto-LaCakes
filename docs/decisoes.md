@@ -35,3 +35,15 @@ Decisões de projeto e o motivo de cada uma.
 | D22 | Contas de teste com domínio reservado **`.test`** (`admin@lacakes.test`, `cliente@lacakes.test`). | Domínio reservado para testes, que não pertence a ninguém. |
 | D23 | Logout limpa a sessão inteira (inclusive o carrinho). | US07: outra pessoa pode usar o mesmo aparelho. |
 | D24 | Cartões de crédito/débito em formulário único; `iniciar.bat`/`iniciar.sh` sobem tudo com um comando. | Escopo enxuto e instalação simples para quem vai testar. |
+
+## Melhorias após os testes com usuários (16/11/2026)
+
+| # | Decisão | Motivo |
+|---|---|---|
+| D25 | **Tela inicial** em `/`, com a frase "Feitos hoje, fresquinhos 💜", botão "Ver cupcakes", situação da loja (aberta/fechada), 3 destaques, "Como funciona" e dados da loja. A vitrine passou para `/vitrine`. Destaques: os cupcakes disponíveis mais vendidos (sem vendas, ordem alfabética). | Pedido dos testadores. Formato e frase escolhidos pelo autor entre as opções apresentadas. |
+| D26 | **Busca de CEP** pelo serviço público ViaCEP, feita pelo servidor (rota `/cep/<cep>`, só para quem está logado), com limite de 4 segundos. CEP fora de Jaú nem é consultado. Se o serviço falhar, o cliente digita o endereço normalmente. Revisa a D08. | Preencher rua e bairro como em outros sites, sem impedir a compra quando não houver internet. |
+| D27 | **Dados da loja** numa tabela `loja` com um único registro (endereço, dias de funcionamento, abertura e fechamento), editada pela administradora na tela "Dados da loja". O nome da loja continua na configuração. | Os horários deixam de ficar fixos no código e passam a controlar o aviso de loja fechada. |
+| D28 | **Loja fechada**: o pedido continua sendo aceito. Com a loja fechada, o status continua "Pago" e a data de preparo é gravada em `pedido.previsao_preparo`. Enquanto o pedido estiver "Pago", aparece o selo "Preparado e entregue amanhã (ter., 17/11)" ou "Preparado e entregue segunda-feira (23/11)". Antes da abertura, o pedido é para o mesmo dia. Depois do fechamento, vai para o próximo dia de funcionamento. Feriados não são tratados. | Escolha do autor entre "selo com data" e "novo status". O selo não muda a máquina de status (RN10) e a data gravada mantém o texto certo nos dias seguintes. |
+| D29 | **Estatísticas de vendas** na aba "Vendas" da administração, com um resumo do dia no topo de "Pedidos". Conta como venda o pedido pago e não cancelado, pelo dia em que foi feito. | Pedido dos testadores. A regra simples e explícita evita contar pedidos estornados ou não pagos. |
+| D30 | Horário pela **hora local do computador** (mesma função `agora()` dos models). As regras recebem o momento por parâmetro, e os testes fixam o relógio em `app.services.loja.relogio`. | A loja atende uma única cidade. Fixar o relógio deixa os testes independentes da hora em que rodam. |
+| D31 | O `seed` **atualiza bancos de versões anteriores** sem apagar dados: cria a tabela nova, adiciona a coluna `previsao_preparo` com `ALTER TABLE` e grava os dados padrão da loja. | Quem já usava o sistema não perde pedidos ao atualizar. Uma ferramenta de migração seria exagero para uma coluna. |

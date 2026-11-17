@@ -19,6 +19,9 @@ Entidades do negócio e como elas se relacionam, sem detalhes de implementação
 | Pedido – Pagamento | 1 : N (0..*) | Cada tentativa de pagamento fica registrada (aprovada, recusada ou estornada). |
 | Pedido – Histórico de status | 1 : N (1..*) | Cada mudança de status gera um registro com data e hora. |
 
+A entidade **Loja** (endereço, dias e horário de funcionamento) não se relaciona com as outras: tem um único registro,
+consultado para saber se a loja está aberta e para calcular a **previsão de preparo** do pedido (US24 e US25).
+
 ## 2. Modelo lógico (normalizado)
 
 ![Modelo lógico](img/02-modelo-logico.png)
@@ -28,10 +31,11 @@ Esquema relacional (PK sublinhada na descrição, FK indicada com →):
 - **usuario** (id PK, nome, email UNIQUE, senha_hash, telefone, perfil, criado_em)
 - **categoria** (id PK, nome UNIQUE, descricao)
 - **produto** (id PK, categoria_id → categoria.id, nome UNIQUE, descricao, ingredientes, alergenicos, preco_centavos, estoque, imagem, ativo, criado_em)
-- **pedido** (id PK, usuario_id → usuario.id, status, modalidade, cep, logradouro, numero, complemento, bairro, subtotal_centavos, taxa_entrega_centavos, total_centavos, criado_em, atualizado_em)
+- **pedido** (id PK, usuario_id → usuario.id, status, modalidade, cep, logradouro, numero, complemento, bairro, subtotal_centavos, taxa_entrega_centavos, total_centavos, criado_em, atualizado_em, previsao_preparo)
 - **item_pedido** (id PK, pedido_id → pedido.id, produto_id → produto.id, quantidade, preco_unitario_centavos; UNIQUE (pedido_id, produto_id))
 - **pagamento** (id PK, pedido_id → pedido.id, metodo, status, valor_centavos, cartao_final, codigo_transacao, criado_em)
 - **historico_status** (id PK, pedido_id → pedido.id, status, observacao, criado_em)
+- **loja** (id PK, endereco, dias_funcionamento, abre_as, fecha_as, atualizado_em)
 
 ### Normalização
 
@@ -65,6 +69,7 @@ Escolhas do projeto físico:
 | **CHECK** de preço (R$ 1,00 a R$ 200,00), estoque (0 a 500) e quantidade (1 a 24) | As regras RN04 e RN14 ficam garantidas também no banco, não só na aplicação. |
 | **Índices** em `usuario.email` (único), `pedido.usuario_id`, `pedido.status` e nas FKs | Aceleram login, "Meus pedidos", o filtro por status do admin e os joins. |
 | Exclusão lógica de produto (`ativo = falso`) | Produtos que já estão em pedidos não podem sumir do histórico. |
+| `loja.dias_funcionamento` como texto de dígitos (`012345` = segunda a sábado) e **CHECK** `abre_as < fecha_as` | Simples de gravar e de ler; o banco impede horário de fechamento antes da abertura. |
 
 Para recriar o banco do zero com os dados de exemplo:
 
