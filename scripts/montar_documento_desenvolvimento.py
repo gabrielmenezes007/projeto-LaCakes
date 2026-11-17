@@ -2,10 +2,13 @@
 
 Uso: python scripts/montar_documento_desenvolvimento.py <modelo.docx> <saida.docx>
 O modelo e o documento gerado não fazem parte do repositório. Dados de identificação: scripts/dados_aluno.json.
+Nomes dos testadores e data do teste: scripts/dados_testes.json (também fora do repositório; sem ele, os quadros
+dos testadores ficam em branco).
 
 Os apêndices são convertidos dos arquivos Markdown de docs/ (fonte única), por um conversor simples que entende
 títulos, parágrafos, listas, tabelas, imagens, citações e blocos de código.
 """
+import json
 import pathlib
 import re
 import sys
@@ -35,6 +38,34 @@ APENDICES = [
     ("E", "Manual de uso", [DOCS / "desenvolvimento" / "manual-de-uso.md"]),
 ]
 ROTEIRO_TESTE = DOCS / "testes-usuarios" / "roteiro-de-teste.md"
+DADOS_TESTES = pathlib.Path(__file__).parent / "dados_testes.json"
+
+# Respostas dos testadores (iguais para os 5: eles fizeram o roteiro e levantaram as melhorias em conjunto)
+FUNCIONOU = [
+    "As 15 tarefas do roteiro de teste funcionaram:",
+    "• Como cliente: filtro por tipo de cupcake; detalhes do cupcake com o aviso \"Contém:\"; criar conta (com o "
+    "aviso da senha fraca); sair e entrar de novo (com o aviso de senha errada); carrinho com os botões − e +; aviso de "
+    "que só existem 4 unidades do Limão Siciliano; CEP de outra cidade recusado e CEP de Jaú aceito; pagamento no débito "
+    "recusado e depois aprovado; pedido com retirada na loja pago com Pix; andamento do pedido; cancelamento do pedido.",
+    "• Como dona da loja: avançar o pedido até \"Entregue\"; salvar o estoque do dia; cadastrar um cupcake novo (com o "
+    "aviso do preço inválido).",
+]
+NAO_FUNCIONOU = [
+    "Nenhuma tarefa do roteiro deixou de funcionar. Melhorias pedidas pelo grupo de testadores:",
+    "1. Ter uma tela inicial antes de abrir a vitrine.",
+    "2. Ao digitar o CEP, a rua e o bairro não são preenchidos sozinhos, como acontece em outros sites.",
+    "3. Na parte de pedidos da dona da loja, ter estatísticas de vendas: valor total dos pedidos do dia, quantidade de "
+    "cada tipo de cupcake etc.",
+    "4. A loja funciona das 9h às 19h: avisar quando ela estiver fechada e, no pedido feito fora do horário, mostrar "
+    "\"Preparado e entregue amanhã\" (segunda a sexta) ou \"Preparado e entregue segunda\" (sábado depois das 19h).",
+    "5. Ter um cadastro com os dados da loja (endereço, dias e horário de funcionamento), usado nas mensagens do item 4.",
+]
+NAO_TESTADO = [
+    "Ainda não existiam na versão testada (são as melhorias pedidas acima): tela inicial, preenchimento do endereço "
+    "pelo CEP, estatísticas de vendas, aviso de loja fechada e cadastro dos dados da loja.",
+    "Fora do roteiro, por isso não testadas: pagamento com cartão de crédito, edição e desativação de cupcake, envio de "
+    "foto do cupcake e filtro de pedidos por status.",
+]
 
 TELAS = [
     ("01-vitrine", "Vitrine"), ("02-vitrine-filtro-recheados", "Vitrine filtrada"),
@@ -48,6 +79,9 @@ TELAS = [
     ("16-acesso-negado-403", "Erro 403"), ("17-pagina-nao-encontrada-404", "Erro 404"),
     ("18-admin-pedidos", "Admin: pedidos"), ("19-admin-produtos-estoque", "Admin: produtos e estoque"),
     ("20-admin-produto-com-erros", "Admin: produto com erros"),
+    ("23-tela-inicial", "Tela inicial (nova)"), ("24-checkout-cep-preenchido", "Checkout: rua e bairro pelo CEP"),
+    ("27-loja-fechada-vitrine", "Aviso de loja fechada"), ("28-pedido-loja-fechada", "Pedido com a loja fechada"),
+    ("25-admin-vendas", "Admin: vendas"), ("26-admin-dados-da-loja", "Admin: dados da loja"),
 ]
 
 INLINE = re.compile(r"(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\)|\*[^*\s][^*]*\*)")
@@ -212,6 +246,34 @@ def celula(c, linhas, tam=10):
         inline(alvo, l, tam)
 
 
+def celula_rotulada(c, linhas, tam=9.5):
+    """Mantém o rótulo do modelo (ex.: "O que testou e funcionou:") em negrito e escreve as linhas abaixo dele."""
+    rotulo = c.text.strip()
+    p = c.paragraphs[0]
+    limpar(p)
+    for extra in c.paragraphs[1:]:
+        extra._element.getparent().remove(extra._element)
+    run(p, rotulo + " ", True, tam)
+    if len(linhas) == 1:
+        inline(p, linhas[0], tam)
+        return
+    for linha in linhas:
+        inline(c.add_paragraph(), linha, tam)
+
+
+def preencher_quadros(doc):
+    """Quadros dos 5 testadores (tabelas 1 a 5 do modelo), com nomes e data de scripts/dados_testes.json."""
+    if not DADOS_TESTES.exists():
+        return
+    dados = json.loads(DADOS_TESTES.read_text(encoding="utf-8"))
+    quadros = [t for t in doc.tables if t.rows[0].cells[0].text.strip().startswith("Nome:")]
+    for tabela, nome in zip(quadros, dados["testadores"]):
+        celula_rotulada(tabela.rows[0].cells[0], [nome])
+        celula_rotulada(tabela.rows[0].cells[1], [dados["data"]])
+        for linha, texto in zip(tabela.rows[1:], (FUNCIONOU, NAO_FUNCIONOU, NAO_TESTADO)):
+            celula_rotulada(linha.cells[0], texto)
+
+
 def preencher(doc):
     aluno = C.ALUNO
     link_videos = aluno.get("link_videos", "a preencher")
@@ -270,6 +332,7 @@ def preencher(doc):
     e_roteiro.titulo("Roteiro para quem vai testar", 2)
     Markdown(e_roteiro, nivel_base=3).converter(ROTEIRO_TESTE, pular_h1=True)
     e_roteiro.par("Quadros dos testadores (um para cada pessoa):", negrito=True)
+    preencher_quadros(doc)
 
     # Laudo de qualidade
     laudo = next(p for p in doc.paragraphs if p.text.startswith("Insira a seguir o laudo"))
@@ -282,8 +345,10 @@ def preencher(doc):
     e2.tabela(["Arquivo de teste", "Tipo", "Testes", "Resultado"], [
         ["test_models.py", "Unitário", "15", "15 aprovados"], ["test_servicos.py", "Unitário", "39", "39 aprovados"],
         ["test_rotas_cliente.py", "Integração", "43", "43 aprovados"],
-        ["test_rotas_admin_e_erros.py", "Integração", "23", "23 aprovados"],
-        ["test_banco.py", "Integração (dados)", "3", "3 aprovados"], ["Total", "", "123", "123 aprovados – cobertura 95%"],
+        ["test_rotas_admin_e_erros.py", "Integração", "24", "24 aprovados"],
+        ["test_banco.py", "Integração (dados)", "3", "3 aprovados"],
+        ["test_melhorias_testes_usuarios.py", "Unitário e integração", "47", "47 aprovados"],
+        ["Total", "", "171", "171 aprovados – cobertura 95%"],
     ], [5.5, 3.5, 2, 4])
     p = e2.par(negrito=True)
     run(p, "2. Erros encontrados durante o desenvolvimento e correções", True, 11)
@@ -301,13 +366,32 @@ def preencher(doc):
     ], [1, 6.2, 3.6, 4.2])
     p = e2.par(negrito=True)
     run(p, "3. Erros apontados pelos testadores e correções", True, 11)
-    e2.tabela(["#", "Erro relatado", "Testador(es)", "Correção", "Evidência"],
-              [[str(i), "a preencher", "", "", ""] for i in range(1, 5)], [1, 5, 2.8, 3.6, 2.6])
+    e2.par("Teste com 5 usuários em 16/11/2026, seguindo o roteiro acima. As 15 tarefas funcionaram para todos, sem "
+           "nenhum erro. Juntos, os testadores pediram as 5 melhorias abaixo, todas implementadas no mesmo dia, cada "
+           "uma com seu commit e seus testes automatizados (detalhes no Apêndice D, itens 3.3 e 3.4):", alinhar="just")
+    e2.tabela(["#", "Melhoria pedida", "Testador(es)", "Correção feita", "Evidência"], [
+        ["1", "Ter uma tela inicial antes da vitrine", "Os 5, em conjunto",
+         "Tela inicial com destaques, situação da loja, \"Como funciona\" e dados da loja",
+         "Commit 278beff; Apêndice C"],
+        ["2", "Preencher rua e bairro ao digitar o CEP", "Os 5, em conjunto",
+         "Busca do endereço no ViaCEP; aviso imediato para CEP fora de Jaú", "Commit 628b6e4; Apêndice C"],
+        ["3", "Estatísticas de vendas na parte de pedidos", "Os 5, em conjunto",
+         "Aba Vendas (total do dia, pedidos, cupcakes por sabor e categoria, pagamento, 7 dias) e resumo em Pedidos",
+         "Commit 14b45e5; Apêndice C"],
+        ["4", "Aviso de loja fechada e pedido \"Preparado e entregue amanhã/segunda\"", "Os 5, em conjunto",
+         "Aviso nas telas e selo com a data de preparo no pedido pago fora do horário", "Commit 6bd02ab; Apêndice C"],
+        ["5", "Cadastro dos dados da loja (endereço, dias e horário)", "Os 5, em conjunto",
+         "Tela Dados da loja, usada no site e na regra de loja fechada", "Commit 6bd02ab; Apêndice C"],
+    ], [1, 4.2, 2.6, 4.6, 2.6])
     p = e2.par(negrito=True)
     run(p, "4. Conclusão", True, 11)
-    p = e2.par(alinhar="just")
-    r = run(p, "a preencher após os testes com usuários.", italico=True)
-    r.font.color.rgb = CINZA
+    e2.par("O sistema foi aprovado na verificação: 171 testes automatizados passaram, com 95% de cobertura do código. "
+           "Também foi aprovado na validação com 5 usuários: as 15 tarefas do roteiro funcionaram para todos, sem "
+           "nenhum erro. As 5 melhorias pedidas pelos testadores foram consideradas pertinentes e implementadas. Elas "
+           "foram conferidas com 47 testes automatizados novos e no navegador (Apêndice D, cenários M12 a M17). Não "
+           "há erros conhecidos em aberto. Limitações registradas: o horário de funcionamento não considera feriados, "
+           "e a busca de CEP precisa de internet (sem ela, o cliente digita o endereço normalmente).",
+           alinhar="just")
 
     # Link do vídeo da solução atualizada (mesma pasta dos dois vídeos)
     tabela_video = next(tb for tb in doc.tables if tb.rows[0].cells[0].text.strip().startswith("Link para o vídeo"))
@@ -321,10 +405,13 @@ def apendices(doc):
         esc.titulo(f"Apêndice {letra} – {nome}", 1)
         if arquivos is None:
             esc.par("Capturas de tela do sistema em funcionamento (tamanho de celular), geradas por "
-                    "scripts/capturar_telas.py em 15/11/2026.", alinhar="just")
+                    "scripts/capturar_telas.py em 16/11/2026. As seis últimas mostram as melhorias feitas depois dos "
+                    "testes com usuários.", alinhar="just")
             pasta = DOCS / "desenvolvimento" / "img" / "telas"
             esc.grade_imagens([(pasta / f"{n}.png", t) for n, t in TELAS], colunas=3, largura_cm=4.6)
             esc.imagem(pasta / "22-vitrine-computador.png", "Vitrine em tela de computador (1280 px)")
+            esc.imagem(pasta / "29-tela-inicial-computador.png", "Tela inicial em tela de computador (1280 px)")
+            esc.imagem(pasta / "30-admin-vendas-computador.png", "Admin: estatísticas de vendas (1280 px)")
             continue
         md = Markdown(esc, nivel_base=2)
         for arquivo in arquivos:

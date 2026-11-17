@@ -15,6 +15,7 @@ scripts/node_modules/
 *.docx
 *.pdf
 scripts/dados_aluno.json
+scripts/dados_testes.json
 
 # Banco local e fotos enviadas pelo admin
 instance/
