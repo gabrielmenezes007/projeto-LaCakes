@@ -37,7 +37,45 @@ if (checkout) {
   if (cep) cep.addEventListener('input', function () {
     var d = cep.value.replace(/\D/g, '').slice(0, 8);
     cep.value = d.length > 5 ? d.slice(0, 5) + '-' + d.slice(5) : d;
+    if (d.length === 8) buscarCep(d);
   });
+
+  // Busca do endereço pelo CEP: preenche rua e bairro (o cliente confere e informa o número).
+  var statusCep = checkout.querySelector('[data-cep-status]');
+  var ultimoCep = '';
+  function avisarCep(texto, classe) {
+    statusCep.textContent = texto;
+    statusCep.className = classe;
+  }
+  function preencher(seletor, valor) {
+    var campo = checkout.querySelector(seletor);
+    if (campo && valor) {
+      campo.value = valor;
+      campo.classList.remove('invalido');
+    }
+  }
+  function buscarCep(digitos) {
+    if (!statusCep || digitos === ultimoCep) return;
+    ultimoCep = digitos;
+    avisarCep('Buscando o endereço…', 'dica');
+    fetch(checkout.dataset.urlCep.replace('00000000', digitos), { headers: { 'Accept': 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (res) {
+        if (cep.value.replace(/\D/g, '') !== digitos) return;  // o cliente já mudou o CEP
+        if (!res.ok) {
+          avisarCep('⚠ ' + res.mensagem, res.fora_da_area ? 'msg-campo' : 'dica');
+          return;
+        }
+        preencher('#logradouro', res.logradouro);
+        preencher('#bairro', res.bairro);
+        avisarCep('✔ Endereço encontrado (' + res.cidade + '/' + res.uf + '). Confira e informe o número.', 'dica ok-texto');
+        checkout.querySelector(res.logradouro ? '#numero' : '#logradouro').focus();
+      })
+      .catch(function () {
+        ultimoCep = '';
+        avisarCep('Não foi possível buscar o CEP agora. Preencha a rua e o bairro.', 'dica');
+      });
+  }
 }
 
 // Número do cartão em grupos de 4 e validade MM/AA.

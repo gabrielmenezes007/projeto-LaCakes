@@ -1,10 +1,11 @@
 """Checkout, pagamento e acompanhamento de pedidos (US10 a US18)."""
-from flask import Blueprint, abort, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, abort, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required
 
 from app.excecoes import ErroValidacao, EstoqueInsuficiente, RegraDeNegocio
 from app.extensions import db
 from app.models import Modalidade, Pedido, StatusPagamento, StatusPedido
+from app.services import cep as servico_cep
 from app.services import frete
 from app.services import pedidos as servico
 from app.services.carrinho import Carrinho
@@ -48,6 +49,13 @@ def checkout():
             return _render_checkout(itens, request.form, alerta=e.mensagem, codigo=422)
         return redirect(url_for("pedidos.pagamento", pedido_id=pedido.id))
     return _render_checkout(itens, {"modalidade": "ENTREGA"})
+
+
+@bp.get("/cep/<cep>")
+@login_required
+def buscar_cep(cep):
+    """US28: devolve rua e bairro do CEP em JSON (usado pelo JavaScript do checkout)."""
+    return jsonify(servico_cep.buscar_endereco(cep))
 
 
 def _render_pagamento(pedido, metodo="CREDITO", erros=None, alerta=None, form=None, codigo=200):

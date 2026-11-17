@@ -5,7 +5,8 @@
 <a class="voltar" href="{{ url_for('carrinho.ver') }}">← Voltar ao carrinho</a>
 <h1>Entrega e resumo</h1>
 {{ caixa_alerta(alerta) }}
-<form method="post" novalidate data-checkout data-subtotal="{{ subtotal }}" data-taxa-entrega="{{ taxa_entrega }}">
+<form method="post" novalidate data-checkout data-subtotal="{{ subtotal }}" data-taxa-entrega="{{ taxa_entrega }}"
+      data-url-cep="{{ url_for('pedidos.buscar_cep', cep='00000000') }}">
   {{ csrf() }}
   <div class="colunas">
     <section>
@@ -25,7 +26,8 @@
       {% if erros.get('modalidade') %}<p class="msg-campo">⚠ {{ erros.modalidade }}</p>{% endif %}
 
       <div class="endereco" data-endereco {% if modalidade == 'RETIRADA' %}hidden{% endif %}>
-        {{ campo('cep', 'CEP', form, erros, placeholder='17200-000', dica='Entregamos em Jaú/SP (CEP 17200-001 a 17229-999).', autocomplete='postal-code', obrigatorio=true, extra='inputmode="numeric" maxlength="9"') }}
+        {{ campo('cep', 'CEP', form, erros, placeholder='17200-000', dica='Entregamos em Jaú/SP (CEP 17200-001 a 17229-999). Ao digitar o CEP, a rua e o bairro são preenchidos.', autocomplete='postal-code', obrigatorio=true, extra='inputmode="numeric" maxlength="9"') }}
+        <p class="dica" data-cep-status aria-live="polite"></p>
         {{ campo('logradouro', 'Rua', form, erros, placeholder='Rua / avenida', autocomplete='address-line1', obrigatorio=true) }}
         <div class="duas">
           <div>{{ campo('numero', 'Número', form, erros, placeholder='Nº', obrigatorio=true) }}</div>
