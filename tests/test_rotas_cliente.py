@@ -12,31 +12,31 @@ def texto(resposta):
 # ------------------------------------------------------------------ vitrine
 class TestVitrine:
     def test_mostra_produtos_ativos_e_esconde_inativos(self, client):
-        html = texto(client.get("/"))
+        html = texto(client.get("/vitrine"))
         assert "Red Velvet Clássico" in html
         assert "R$ 9,90" in html
         assert "Panetone Trufado" not in html
 
     def test_selos_esgotado_e_ultimas_unidades(self, client):
-        html = texto(client.get("/"))
+        html = texto(client.get("/vitrine"))
         assert "Esgotado" in html
         assert "Últimas unidades" in html
 
     def test_filtro_por_categoria(self, client):
         cat = produto("Chocolate 70% Zero Açúcar").categoria_id
-        html = texto(client.get(f"/?categoria={cat}"))
+        html = texto(client.get(f"/vitrine?categoria={cat}"))
         assert "Chocolate 70% Zero Açúcar" in html
         assert "Red Velvet Clássico" not in html
 
     def test_categoria_sem_produtos(self, client):
         cat = produto("Panetone Trufado").categoria_id  # só tem o panetone, que está inativo
-        assert "Nenhum cupcake nesta categoria hoje" in texto(client.get(f"/?categoria={cat}"))
+        assert "Nenhum cupcake nesta categoria hoje" in texto(client.get(f"/vitrine?categoria={cat}"))
 
     def test_vitrine_vazia(self, client, app):
         for p in db.session.scalars(db.select(type(produto("Red Velvet Clássico")))):
             p.ativo = False
         db.session.commit()
-        assert "Nenhum cupcake disponível hoje" in texto(client.get("/"))
+        assert "Nenhum cupcake disponível hoje" in texto(client.get("/vitrine"))
 
     def test_detalhe_mostra_alergenicos(self, client):
         html = texto(client.get(f"/produto/{produto('Ninho com Nutella').id}"))
@@ -87,7 +87,7 @@ class TestConta:
     def test_login_nao_redireciona_para_outro_site(self, client):
         resposta = client.post("/login?next=https://site-malicioso.com",
                                data={"email": "cliente@lacakes.test", "senha": "Cliente@2026"})
-        assert resposta.headers["Location"] == "/"
+        assert resposta.headers["Location"] == "/vitrine"
 
     def test_carrinho_mantido_apos_login(self, client):
         adicionar(client, "Red Velvet Clássico", 2)
@@ -116,13 +116,13 @@ class TestCarrinho:
 
     def test_nao_adiciona_esgotado(self, client):
         adicionar(client, "Morango com Chantilly", 1)
-        assert "Este cupcake esgotou hoje" in texto(client.get("/"))
+        assert "Este cupcake esgotou hoje" in texto(client.get("/vitrine"))
 
     def test_limite_de_24_por_sabor(self, client, app):
         produto("Ninho com Nutella").estoque = 100
         db.session.commit()
         adicionar(client, "Ninho com Nutella", 25)
-        assert "O limite é de 24 unidades por sabor" in texto(client.get("/"))
+        assert "O limite é de 24 unidades por sabor" in texto(client.get("/vitrine"))
 
     def test_atualizar_e_remover(self, client):
         adicionar(client, "Red Velvet Clássico", 2)

@@ -1,4 +1,6 @@
 """Configuração comum dos testes: aplicação com banco SQLite em memória e dados iniciais."""
+from datetime import datetime
+
 import pytest
 
 from app import create_app
@@ -14,6 +16,20 @@ ENDERECO = {"modalidade": "ENTREGA", "cep": CEP_JAU, "logradouro": "Rua das Palm
             "complemento": "Apto 52", "bairro": "Centro"}
 CARTAO_OK = {"nome_cartao": "ANA SOUZA", "numero_cartao": "4111 1111 1111 1111", "validade": "12/35", "cvv": "123"}
 CARTAO_RECUSADO = {**CARTAO_OK, "numero_cartao": "4111 1111 1111 0000"}
+
+
+# Segunda-feira, 10h: loja aberta. Os testes de horário trocam o relógio com fixar_relogio().
+MOMENTO_PADRAO = datetime(2026, 11, 16, 10, 0)
+
+
+def fixar_relogio(monkeypatch, momento):
+    monkeypatch.setattr("app.services.loja.relogio", lambda: momento)
+
+
+@pytest.fixture(autouse=True)
+def relogio_fixo(monkeypatch):
+    """Deixa os testes independentes da hora em que rodam (o aviso de loja fechada depende do relógio)."""
+    fixar_relogio(monkeypatch, MOMENTO_PADRAO)
 
 
 @pytest.fixture

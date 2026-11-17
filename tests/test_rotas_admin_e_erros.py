@@ -33,7 +33,7 @@ class TestAcessoAdmin:
     def test_admin_acessa(self, admin_logado):
         assert admin_logado.get("/admin/").status_code == 302
         assert "Produtos e estoque do dia" in texto(admin_logado.get("/admin/produtos"))
-        assert "Administração" in texto(admin_logado.get("/"))
+        assert "Administração" in texto(admin_logado.get("/vitrine"))
 
 
 class TestProdutosAdmin:
@@ -42,7 +42,7 @@ class TestProdutosAdmin:
         assert resposta.status_code == 302
         p = produto("Pistache Supremo")
         assert p.preco_centavos == 1490 and p.caminho_imagem == "img/cupcakes/padrao.svg"
-        assert "Pistache Supremo" in texto(admin_logado.get("/"))
+        assert "Pistache Supremo" in texto(admin_logado.get("/vitrine"))
 
     def test_nome_duplicado_e_preco_fora_da_faixa(self, admin_logado):
         resposta = admin_logado.post("/admin/produtos/novo",
@@ -73,7 +73,7 @@ class TestProdutosAdmin:
                           data=form_produto(nome="Red Velvet Clássico", preco="11,00", ativo=""))
         p = produto("Red Velvet Clássico")
         assert p.preco_centavos == 1100 and not p.ativo
-        assert '<h2 class="nome">Red Velvet Clássico</h2>' not in texto(admin_logado.get("/"))
+        assert '<h2 class="nome">Red Velvet Clássico</h2>' not in texto(admin_logado.get("/vitrine"))
 
     def test_editar_produto_inexistente(self, admin_logado):
         assert admin_logado.get("/admin/produtos/999/editar").status_code == 404
@@ -168,6 +168,6 @@ class TestErros:
         assert "Arquivo muito grande" in texto(resposta)
 
 
-@pytest.mark.parametrize("url", ["/", "/carrinho/", "/login", "/cadastro"])
+@pytest.mark.parametrize("url", ["/", "/vitrine", "/carrinho/", "/login", "/cadastro"])
 def test_paginas_publicas_respondem(client, url):
     assert client.get(url).status_code == 200
