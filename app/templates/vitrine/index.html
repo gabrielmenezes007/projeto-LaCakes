@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
-{% from '_macros.html' import imagem_produto, csrf %}
+{% from '_macros.html' import card_produto %}
 {% block titulo %}Vitrine{% endblock %}
 {% block conteudo %}
 <section class="banner">
   <b>Feitos hoje, fresquinhos 💜</b>
-  Peça até 17h e receba no mesmo dia em Jaú, ou retire na loja.
+  {% if situacao_loja.aberta %}Peça até as {{ situacao_loja.fecha_as }} e receba hoje em Jaú, ou retire na loja.
+  {% else %}Entregamos em Jaú, ou você retira na loja.{% endif %}
 </section>
 
 <nav class="chips" aria-label="Filtrar por categoria">
@@ -31,30 +32,7 @@
 <h1 class="sr">Cupcakes{% if categoria_ativa %} – {{ categoria_ativa.nome }}{% endif %}</h1>
 <div class="grade">
   {% for p in produtos %}
-  <article class="card">
-    {% if not p.disponivel %}<span class="selo">Esgotado</span>
-    {% elif p.ultimas_unidades %}<span class="selo ultimas">Últimas unidades</span>{% endif %}
-    <a href="{{ url_for('vitrine.produto', produto_id=p.id) }}" class="card-link">
-      {{ imagem_produto(p) }}
-      <div class="info">
-        <h2 class="nome">{{ p.nome }}</h2>
-        <span class="tag-cat">{{ p.categoria.nome }}</span>
-        <div class="preco">{{ p.preco_centavos|moeda }}</div>
-      </div>
-    </a>
-    <div class="info acoes">
-      {% if p.disponivel %}
-      <form method="post" action="{{ url_for('carrinho.adicionar', produto_id=p.id) }}">
-        {{ csrf() }}
-        <input type="hidden" name="quantidade" value="1">
-        <input type="hidden" name="voltar" value="{{ request.full_path }}">
-        <button class="btn peq" type="submit" aria-label="Adicionar 1 {{ p.nome }} ao carrinho">+ Adicionar</button>
-      </form>
-      {% else %}
-      <button class="btn peq des" type="button" disabled>Esgotado</button>
-      {% endif %}
-    </div>
-  </article>
+  {{ card_produto(p, request.full_path) }}
   {% endfor %}
 </div>
 {% endif %}

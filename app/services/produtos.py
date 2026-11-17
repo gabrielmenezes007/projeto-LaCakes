@@ -6,7 +6,8 @@ from flask import current_app
 
 from app.excecoes import ErroValidacao
 from app.extensions import db
-from app.models import Categoria, Produto
+from app.models import Categoria, ItemPedido, Pedido, Produto
+from app.models.pedido import STATUS_VENDIDOS
 from app.models.produto import ESTOQUE_MAXIMO, PRECO_MAXIMO, PRECO_MINIMO
 from app.utils import formatar_moeda, para_inteiro, reais_para_centavos
 
@@ -20,6 +21,17 @@ def produtos_da_vitrine(categoria_id=None):
     # disponíveis primeiro, depois esgotados; dentro de cada grupo, por nome
     produtos = db.session.scalars(consulta.order_by(Produto.nome)).all()
     return sorted(produtos, key=lambda p: not p.disponivel)
+
+
+def destaques(limite=3):
+    """Tela inicial (US27): cupcakes disponíveis mais vendidos; sem vendas, segue a ordem alfabética."""
+    vendidos = (db.select(ItemPedido.produto_id, db.func.sum(ItemPedido.quantidade).label("quantidade"))
+                .join(Pedido).where(Pedido.status.in_(STATUS_VENDIDOS))
+                .group_by(ItemPedido.produto_id).subquery())
+    consulta = (db.select(Produto).outerjoin(vendidos, vendidos.c.produto_id == Produto.id)
+                .where(Produto.ativo.is_(True), Produto.estoque > 0)
+                .order_by(db.func.coalesce(vendidos.c.quantidade, 0).desc(), Produto.nome).limit(limite))
+    return db.session.scalars(consulta).all()
 
 
 def categorias():

@@ -149,7 +149,7 @@ fieldset.opcoes legend{font-weight:bold;color:var(--verde-profundo);margin-botto
 /* ---------- pedidos ---------- */
 .status{display:inline-block;font-size:12px;font-weight:bold;padding:3px 9px;border-radius:10px;white-space:nowrap}
 .s-pago{background:#E3F2FD;color:#0D47A1}.s-prep{background:#FFF3E0;color:#7A3E00}.s-ent{background:var(--ok-fundo);color:var(--ok)}
-.s-ag{background:#EEE;color:#4a4a4a}.s-canc{background:var(--erro-fundo);color:var(--erro)}.s-saiu{background:#F3E5F5;color:#6A1B9A}
+.s-ag{background:#EEE;color:#4a4a4a}.s-agenda{background:var(--aviso-fundo);color:var(--aviso);white-space:normal}.s-canc{background:var(--erro-fundo);color:var(--erro)}.s-saiu{background:#F3E5F5;color:#6A1B9A}
 .grade-pedidos{display:grid;gap:10px}
 .pedido{display:block;background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(17,47,36,.10);color:inherit;text-decoration:none}
 a.pedido:hover{box-shadow:0 3px 10px rgba(17,47,36,.18)}
@@ -165,8 +165,8 @@ a.pedido:hover{box-shadow:0 3px 10px rgba(17,47,36,.18)}
 .passo.pend{color:#8a7d78}
 
 /* ---------- admin ---------- */
-.admin-abas{display:flex;gap:8px;margin-bottom:12px}
-.admin-abas a{padding:8px 16px;border-radius:10px;font-size:15px;background:#fff;border:1px solid var(--borda);text-decoration:none;color:var(--texto)}
+.admin-abas{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px}
+.admin-abas a{white-space:nowrap;padding:8px 16px;border-radius:10px;font-size:15px;background:#fff;border:1px solid var(--borda);text-decoration:none;color:var(--texto)}
 .admin-abas a.ativo{background:var(--verde-profundo);color:#fff}
 .titulo-acao{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .titulo-acao .btn{margin:0}
@@ -181,6 +181,52 @@ a.pedido:hover{box-shadow:0 3px 10px rgba(17,47,36,.18)}
 .filtro select{max-width:280px}
 .itens-admin{margin:6px 0;padding-left:20px;font-size:14px}
 .vazio-texto{color:var(--cinza)}
+
+/* ---------- tela inicial ---------- */
+.hero{background:linear-gradient(120deg,var(--verde-profundo),var(--primaria));color:#fff;border-radius:18px;padding:22px 18px;
+  display:flex;align-items:center;gap:16px;margin-bottom:14px;overflow:hidden}
+.hero h1{color:#fff;font-size:28px;margin:4px 0 8px}
+.hero p{margin:6px 0}
+.hero-marca{font-size:13px;letter-spacing:.06em;text-transform:uppercase;opacity:.9}
+.hero-img{display:none;width:240px;height:auto;border-radius:16px;background:var(--creme);flex:none}
+.btn.claro{background:#fff;color:var(--primaria);margin-top:14px}
+.btn.claro:hover{background:var(--primaria-clara)}
+.situacao{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:bold;margin-top:12px;
+  background:rgba(255,255,255,.14);border-radius:20px;padding:5px 12px}
+.caixa .situacao{background:var(--creme)}
+.ponto{width:10px;height:10px;border-radius:50%;background:#6FCF97;flex:none}
+.situacao.fechada .ponto{background:#F2C14E}
+.titulo-secao{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.passos{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.passos li{background:#fff;border-radius:var(--raio);padding:12px;display:flex;gap:12px;align-items:center;box-shadow:0 1px 4px rgba(17,47,36,.10)}
+.passos .num{width:34px;height:34px;border-radius:50%;background:var(--primaria);color:#fff;font-weight:bold;display:flex;
+  align-items:center;justify-content:center;flex:none}
+.info-loja p{margin:8px 0}
+
+/* ---------- avisos de horário e CEP ---------- */
+.loja-fechada{margin-top:0}
+.ok-texto{color:var(--ok);font-weight:bold}
+
+/* ---------- admin: vendas e dados da loja ---------- */
+.resumo-hoje{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px 12px;background:#fff;border-radius:12px;
+  padding:12px;margin-bottom:12px;text-decoration:none;color:inherit;box-shadow:0 1px 4px rgba(17,47,36,.10)}
+.indicadores{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:10px 0}
+.indicador{background:#fff;border-radius:12px;padding:12px;box-shadow:0 1px 4px rgba(17,47,36,.10)}
+.indicador span{display:block;font-size:13px;color:var(--cinza)}
+.indicador b{display:block;font-size:22px;color:var(--verde-profundo);margin-top:2px}
+.colunas-iguais{display:grid;gap:0 16px}
+.tabela{width:100%;border-collapse:collapse;font-size:14px}
+.tabela th{text-align:left;color:var(--cinza);font-weight:bold;font-size:13px;border-bottom:1px solid var(--borda);padding:6px 4px}
+.tabela td{border-bottom:1px solid var(--borda);padding:7px 4px;vertical-align:top}
+.tabela tbody tr:hover{background:var(--creme)}
+.tabela .num{text-align:right;white-space:nowrap}
+.barra{display:block;height:6px;margin-top:5px;background:var(--primaria-clara);border-radius:4px}
+.barra span{display:block;height:100%;background:var(--primaria);border-radius:4px}
+.campo-data{width:auto}
+fieldset.dias{border:1.5px solid var(--borda);border-radius:10px;padding:4px 12px 8px;margin:12px 0 0;display:flex;flex-wrap:wrap;gap:0 16px}
+fieldset.dias legend{font-size:14px;font-weight:bold;color:var(--verde-profundo);padding:0 4px}
+fieldset.dias .check{margin:8px 0}
+fieldset.dias.invalido{border-color:var(--erro)}
 
 /* ---------- rodapé ---------- */
 .rodape{text-align:center;font-size:13px;color:var(--cinza);padding:16px;border-top:1px solid var(--borda)}
@@ -200,11 +246,18 @@ body.admin{padding-bottom:0}
   .resumo{position:sticky;top:90px;margin-top:0}
   .grade-pedidos{grid-template-columns:repeat(2,1fr)}
   h1{font-size:28px}
+  .hero{padding:32px}
+  .hero h1{font-size:36px}
+  .hero-img{display:block}
+  .passos{grid-template-columns:repeat(3,1fr)}
+  .indicadores{grid-template-columns:repeat(4,1fr)}
+  .colunas-iguais{grid-template-columns:1fr 1fr}
 }
 @media (min-width:960px){
   body{padding-bottom:0}
   .rodape-nav{display:none}
   .menu-desktop{display:flex}
   .grade{grid-template-columns:repeat(4,1fr)}
+  .grade.destaques{grid-template-columns:repeat(3,1fr)}
   .btn.auto,.estreito .btn{max-width:none}
 }

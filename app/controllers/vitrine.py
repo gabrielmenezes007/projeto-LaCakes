@@ -1,9 +1,9 @@
-"""Vitrine virtual: lista de cupcakes e página de detalhes (US01 a US04)."""
+"""Tela inicial, vitrine virtual (lista de cupcakes) e página de detalhes (US01 a US04 e US27)."""
 from flask import Blueprint, abort, render_template, request, session
 
 from app.extensions import db
 from app.models import Produto
-from app.services import produtos
+from app.services import frete, produtos
 from app.services.carrinho import MAXIMO_POR_ITEM, Carrinho
 from app.utils import para_inteiro
 
@@ -11,6 +11,12 @@ bp = Blueprint("vitrine", __name__)
 
 
 @bp.get("/")
+def inicio():
+    return render_template("vitrine/inicio.html", destaques=produtos.destaques(3), taxa_entrega=frete.TAXA_ENTREGA,
+                           entrega_gratis=frete.ENTREGA_GRATIS_A_PARTIR)
+
+
+@bp.get("/vitrine")
 def index():
     categoria_id = para_inteiro(request.args.get("categoria"))
     categorias = produtos.categorias()

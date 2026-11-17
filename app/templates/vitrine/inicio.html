@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% from '_macros.html' import card_produto %}
+{% block titulo %}Início{% endblock %}
+{% block conteudo %}
+<section class="hero">
+  <div class="hero-texto">
+    <p class="hero-marca">{{ loja.nome }}</p>
+    <h1>Feitos hoje, fresquinhos 💜</h1>
+    <p>Cupcakes artesanais preparados todos os dias em Jaú. Escolha seus sabores pelo site e receba em casa ou
+      retire na loja.</p>
+    <a class="btn auto claro" href="{{ url_for('vitrine.index') }}">Ver cupcakes</a>
+    <p class="situacao {{ 'aberta' if situacao_loja.aberta else 'fechada' }}"><span class="ponto" aria-hidden="true"></span>{{ situacao_loja.resumo }}</p>
+  </div>
+  <img class="hero-img" src="{{ url_for('static', filename='img/cupcakes/ninho-nutella.svg') }}" alt="" width="260" height="195">
+</section>
+
+{% if situacao_loja.aviso %}
+<div class="alerta aviso" role="status"><span aria-hidden="true">🌙</span><span>{{ situacao_loja.aviso }}</span></div>
+{% endif %}
+
+{% if destaques %}
+<section>
+  <div class="titulo-secao">
+    <h2>Destaques de hoje</h2>
+    <a class="link" href="{{ url_for('vitrine.index') }}">Ver todos →</a>
+  </div>
+  <div class="grade destaques">
+    {% for p in destaques %}
+    {{ card_produto(p, url_for('vitrine.inicio')) }}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section>
+  <h2>Como funciona</h2>
+  <ol class="passos">
+    <li><span class="num" aria-hidden="true">1</span><div><b>Escolha</b> os sabores na vitrine e monte o carrinho.</div></li>
+    <li><span class="num" aria-hidden="true">2</span><div><b>Pague</b> com cartão de crédito, débito ou Pix.</div></li>
+    <li><span class="num" aria-hidden="true">3</span><div><b>Receba</b> em casa, em Jaú, ou retire na loja.</div></li>
+  </ol>
+</section>
+
+<section class="caixa info-loja">
+  <h2>Nossa loja</h2>
+  <p><span aria-hidden="true">📍</span> {{ loja.endereco }}</p>
+  <p><span aria-hidden="true">🕘</span> {{ loja.horario }}</p>
+  <p><span aria-hidden="true">🚚</span> Entrega em Jaú por {{ taxa_entrega|moeda }} · grátis a partir de {{ entrega_gratis|moeda }}</p>
+</section>
+{% endblock %}
